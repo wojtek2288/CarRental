@@ -1,26 +1,38 @@
 import React, { Component } from 'react';
+import { Container, Button } from 'reactstrap';
+import { Link } from 'react-router-dom';
+import { GoogleLogin } from 'react-google-login';
 
-export class Home extends Component {
-  static displayName = Home.name;
+const Home = (props) => {
+    const responseGoogleSuccess = (response) => {
+        console.log(response);
+        props.history.push('/signup');
+    }
+    const responseGoogleFailure = (response) => {
+        console.log(response);
+        props.history.push('/');
+    }
 
-  render () {
     return (
-      <div>
-        <h1>Hello, world!</h1>
-        <p>Welcome to your new single-page application, built with:</p>
-        <ul>
-          <li><a href='https://get.asp.net/'>ASP.NET Core</a> and <a href='https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx'>C#</a> for cross-platform server-side code</li>
-          <li><a href='https://facebook.github.io/react/'>React</a> for client-side code</li>
-          <li><a href='http://getbootstrap.com/'>Bootstrap</a> for layout and styling</li>
-        </ul>
-        <p>To help you get started, we have also set up:</p>
-        <ul>
-          <li><strong>Client-side navigation</strong>. For example, click <em>Counter</em> then <em>Back</em> to return here.</li>
-          <li><strong>Development server integration</strong>. In development mode, the development server from <code>create-react-app</code> runs in the background automatically, so your client-side resources are dynamically built on demand and the page refreshes when you modify any file.</li>
-          <li><strong>Efficient production builds</strong>. In production mode, development-time features are disabled, and your <code>dotnet publish</code> configuration produces minified, efficiently bundled JavaScript files.</li>
-        </ul>
-        <p>The <code>ClientApp</code> subdirectory is a standard React application based on the <code>create-react-app</code> template. If you open a command prompt in that directory, you can run <code>npm</code> commands such as <code>npm test</code> or <code>npm install</code>.</p>
-      </div>
+        <div className='home'>
+            <Container>
+                <div className='home-text'>
+                    <h1>Car Rental Service</h1>
+                    <p>Welcome to Car Rental Service, where you can easily check and compare car rent prices in different companies.</p>
+                    <GoogleLogin
+                        clientId="626144450964-lgvp421untjh8h698e0pq5cvtpica9me.apps.googleusercontent.com"
+                        render={renderProps => (
+                            <Button onClick={renderProps.onClick} disabled={renderProps.disabled} className='btn-text-home' color='primary'> Sign In </Button>
+                        )}
+                        buttonText="Login"
+                        onSuccess={responseGoogleSuccess}
+                        onFailure={responseGoogleFailure}
+                        cookiePolicy={'single_host_origin'}
+                    />
+                </div>
+            </Container>
+        </div>
     );
-  }
 }
+
+export default Home;
