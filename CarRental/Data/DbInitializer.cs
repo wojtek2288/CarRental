@@ -15,7 +15,18 @@ namespace CarRental.Data
                 DateOfBirth = System.DateTime.Today,
                 DriversLicenseDate = System.DateTime.MinValue,
                 Email = "user@website.com",
-                Location = "Warsaw"
+                Location = "Warsaw",
+                Role = Models.User.UserRole.CLIENT
+            });
+
+            context.Users.Add(new Models.User
+            {
+                AuthID = "googleid2",
+                DateOfBirth = System.DateTime.Today,
+                DriversLicenseDate = System.DateTime.MinValue,
+                Email = "user2@website.com",
+                Location = "Warsaw",
+                Role = Models.User.UserRole.ADMINISTRATOR
             });
 
             context.Cars.Add(new Models.Car
