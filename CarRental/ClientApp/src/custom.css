@@ -46,8 +46,16 @@ code {
     margin-top: 6vh;
 }
 
+.margin-bottom {
+    margin-bottom: 6vh;
+}
+
 .form-input{
     margin-bottom: 2rem;
+}
+
+.alert-margin{
+    margin-top: 1rem;
 }
 
 .btn-text-home{
