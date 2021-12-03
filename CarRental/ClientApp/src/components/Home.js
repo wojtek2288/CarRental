@@ -1,13 +1,19 @@
 import React, { Component } from 'react';
-import { Container, Button } from 'reactstrap';
+import { Container, Button, Alert } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { GoogleLogin } from 'react-google-login';
+import { useState } from 'react';
+
 
 const Home = (props) => {
-    const responseGoogleSuccess = (response) => {
+    const responseGoogleSuccess = async (response) => {
         console.log(response);
+        localStorage.setItem('email', response.getBasicProfile().getEmail());
+        localStorage.setItem('googleId', response.getBasicProfile().getId());
+        localStorage.setItem('accessToken', response.getAuthResponse(true).access_token);
         props.history.push('/signup');
     }
+
     const responseGoogleFailure = (response) => {
         console.log(response);
         props.history.push('/');
@@ -28,6 +34,7 @@ const Home = (props) => {
                         onSuccess={responseGoogleSuccess}
                         onFailure={responseGoogleFailure}
                         cookiePolicy={'single_host_origin'}
+                        isSignedIn={true}
                     />
                 </div>
             </Container>
