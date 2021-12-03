@@ -1,9 +1,6 @@
-import React, { Component } from 'react';
-import { Container, Button, Alert } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { Container, Button } from 'reactstrap';
 import { GoogleLogin } from 'react-google-login';
-import { useState } from 'react';
-
 
 const Home = (props) => {
     const responseGoogleSuccess = async (response) => {
