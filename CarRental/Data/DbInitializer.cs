@@ -16,7 +16,8 @@ namespace CarRental.Data
                 DriversLicenseDate = System.DateTime.MinValue,
                 Email = "user@website.com",
                 Location = "Warsaw",
-                Role = Models.User.UserRole.CLIENT
+                //Role = Models.User.UserRole.CLIENT
+                AdminRole = false,
             });
 
             context.Users.Add(new Models.User
@@ -26,16 +27,17 @@ namespace CarRental.Data
                 DriversLicenseDate = System.DateTime.MinValue,
                 Email = "user2@website.com",
                 Location = "Warsaw",
-                Role = Models.User.UserRole.ADMINISTRATOR
+                //Role = Models.User.UserRole.ADMINISTRATOR
+                AdminRole = true,
             });
 
             context.Cars.Add(new Models.Car
             {
-                Brand="Lego",
-                Model="Custom Model",
-                Description="Taki fajny kolorowy i szybki",
-                Horsepower=9999,
-                YearOfProduction=2040
+                Brand = "Lego",
+                Model = "Custom Model",
+                Description = "Taki fajny kolorowy i szybki",
+                Horsepower = 9999,
+                YearOfProduction = 2040
             });
 
             context.SaveChanges();

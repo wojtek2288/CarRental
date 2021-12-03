@@ -7,10 +7,14 @@ import './NavMenu.css';
 const NavMenu = (props) => {
     const [toggleNavbar, setToggleNavbar] = useState(true);
 
-    const responseGoogleSuccess = (response) => {
+    const responseGoogleSuccess = async (response) => {
         console.log(response);
+        localStorage.setItem('email', response.getBasicProfile().getEmail());
+        localStorage.setItem('googleId', response.getBasicProfile().getId());
+        localStorage.setItem('accessToken', response.getAuthResponse(true).access_token);
         props.history.push('/signup');
     }
+
     const responseGoogleFailure = (response) => {
         console.log(response);
         props.history.push('/');

@@ -52,6 +52,7 @@ namespace CarRental
             app.UseSpaStaticFiles();
 
             app.UseRouting();
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
