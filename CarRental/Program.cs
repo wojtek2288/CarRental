@@ -17,6 +17,7 @@ namespace CarRental
         {
             var host = CreateHostBuilder(args).Build();
 
+            DbUtils.Init(host);
             CreateDbIfNotExists(host);
 
             host.Run();
