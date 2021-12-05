@@ -26,7 +26,7 @@ namespace CarRental.Controllers
         {
             if (dbUtils.AddCar(NewCar)) return StatusCode(200);
 
-            return StatusCode(500);
+            return StatusCode(503);
         }
     }
 }

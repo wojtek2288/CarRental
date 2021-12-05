@@ -27,7 +27,7 @@ namespace CarRental.Controllers
             NewUser.Role = POCO.User.UserRole.CLIENT;
             if (dbUtils.AddUser(NewUser)) return StatusCode(200);
 
-            return StatusCode(500);
+            return StatusCode(503);
         }
     }
 }
