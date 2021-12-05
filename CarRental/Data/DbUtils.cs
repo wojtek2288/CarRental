@@ -8,9 +8,9 @@ namespace CarRental.Data
 {
     public class DbUtils
     {
-        static DatabaseContext context;
+        private DatabaseContext context;
 
-        public static bool AddUser(POCO.User user)
+        public bool AddUser(POCO.User user)
         {
             context.Users.Add(new Models.User()
             {
@@ -25,7 +25,7 @@ namespace CarRental.Data
             return context.SaveChanges() == 1;
         }
 
-        public static bool AddCar(POCO.Car car)
+        public bool AddCar(POCO.Car car)
         {
             context.Cars.Add(new Models.Car()
             {
@@ -39,7 +39,7 @@ namespace CarRental.Data
             return context.SaveChanges() == 1;
         }
 
-        public static IEnumerable<POCO.Car> GetCars()
+        public IEnumerable<POCO.Car> GetCars()
         {
             foreach (Models.Car car in context.Cars)
             {
@@ -47,29 +47,17 @@ namespace CarRental.Data
             }
         }
 
-        public static IEnumerable<POCO.User> GetUsers()
+        public IEnumerable<POCO.User> GetUsers()
         {
             foreach (Models.User user in context.Users)
             {
-                yield return (POCO.User) user;
+                yield return (POCO.User)user;
             }
         }
 
-        internal static void Init(IHost host)
+        public DbUtils(DatabaseContext context)
         {
-            using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                try
-                {
-                    context = services.GetRequiredService<DatabaseContext>();
-                }
-                catch (Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occurred initialising DbUtils.");
-                }
-            }
+            this.context = context;
         }
     }
 }
