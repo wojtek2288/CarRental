@@ -16,8 +16,7 @@ namespace CarRental.Data
                 DriversLicenseDate = System.DateTime.MinValue,
                 Email = "user@website.com",
                 Location = "Warsaw",
-                //Role = Models.User.UserRole.CLIENT
-                AdminRole = false,
+                Role = Models.User.UserRole.CLIENT
             });
 
             context.Users.Add(new Models.User
@@ -27,8 +26,7 @@ namespace CarRental.Data
                 DriversLicenseDate = System.DateTime.MinValue,
                 Email = "user2@website.com",
                 Location = "Warsaw",
-                //Role = Models.User.UserRole.ADMINISTRATOR
-                AdminRole = true,
+                Role = Models.User.UserRole.ADMINISTRATOR
             });
 
             context.Cars.Add(new Models.Car

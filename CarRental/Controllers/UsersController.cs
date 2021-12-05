@@ -21,9 +21,10 @@ namespace CarRental.Controllers
             _context = context;
         }
 
-        [HttpPost]
+        [HttpPost("clients")]
         public ActionResult Post([FromBody]User NewUser)
         {
+            NewUser.Role = Models.User.UserRole.CLIENT;
             _context.Users.Add(NewUser);
             _context.SaveChanges();
             return StatusCode(200);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Container, Form, FormGroup, Label, Input, Button, Card, CardBody, CardTitle } from 'reactstrap';
 import axios from 'axios';
 
@@ -9,10 +9,9 @@ const SignUp = () => {
         dateOfBirth: new Date(),
         driversLicenseDate: new Date(),
         email: localStorage.getItem('email'),
-        location: 'Warsaw',
-        adminRole: new Boolean(),
+        location: ''
     });
-    const { authID, dateOfBirth, driversLicenseDate, email, location, adminRole } = userInfo;
+    const { authID, dateOfBirth, driversLicenseDate, email, location } = userInfo;
 
     const onChange = (e) => {
         console.log(e.target);
@@ -28,7 +27,7 @@ const SignUp = () => {
                 },
             }
 
-            const res = await axios.post('/users', userInfo, config);
+            const res = await axios.post('/users/clients', userInfo, config);
             console.log(res);
         }
         catch (err) {
@@ -76,7 +75,7 @@ const SignUp = () => {
                                 Location
                             </Label>
                             <Input className='form-input'
-                                id="location" t
+                                id="location"
                                 name="location"
                                 placeholder="Location"
                                 type="text"
