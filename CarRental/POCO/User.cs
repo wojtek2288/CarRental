@@ -16,5 +16,19 @@ namespace CarRental.POCO
         public string AuthID { get; set; }
         public string Email { get; set; }
         public UserRole Role { get; set; }
+
+        public static explicit operator User(Models.User user)
+        {
+            return new User()
+            {
+                Id = user.Id,
+                DriversLicenseDate = user.DriversLicenseDate,
+                DateOfBirth = user.DateOfBirth,
+                Location = user.Location,
+                AuthID = user.AuthID,
+                Email = user.Email,
+                Role = (UserRole)user.Role
+            };
+        }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace CarRental.Data
 {
@@ -38,9 +39,25 @@ namespace CarRental.Data
             return context.SaveChanges() == 1;
         }
 
+        public static IEnumerable<POCO.Car> GetCars()
+        {
+            foreach (Models.Car car in context.Cars)
+            {
+                yield return (POCO.Car)car;
+            }
+        }
+
+        public static IEnumerable<POCO.User> GetUsers()
+        {
+            foreach (Models.User user in context.Users)
+            {
+                yield return (POCO.User) user;
+            }
+        }
+
         internal static void Init(IHost host)
         {
-            using(var scope = host.Services.CreateScope())
+            using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 try
