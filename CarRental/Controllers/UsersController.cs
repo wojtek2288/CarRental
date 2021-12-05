@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CarRental.Data;
-using CarRental.Models;
+using CarRental.POCO;
 
 namespace CarRental.Controllers
 {
@@ -13,27 +13,21 @@ namespace CarRental.Controllers
     [Route("[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly DatabaseContext _context;
+        private DbUtils dbUtils;
         private readonly ILogger<UsersController> _logger;
         public UsersController(ILogger<UsersController> logger, DatabaseContext context)
         {
             _logger = logger;
-            _context = context;
+            dbUtils = new DbUtils(context);
         }
 
         [HttpPost("clients")]
-        public ActionResult Post([FromBody]User NewUser)
+        public ActionResult Post([FromBody] User NewUser)
         {
-            NewUser.Role = Models.User.UserRole.CLIENT;
-            _context.Users.Add(NewUser);
-            _context.SaveChanges();
-            return StatusCode(200);
-        }
+            NewUser.Role = POCO.User.UserRole.CLIENT;
+            if (dbUtils.AddUser(NewUser)) return StatusCode(200);
 
-        public IEnumerable<User> GetAll()
-        {
-            IEnumerable<User> Users = _context.Users.ToList();
-            return Users;
+            return StatusCode(500);
         }
     }
 }
