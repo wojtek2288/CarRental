@@ -34,7 +34,8 @@ namespace CarRental.Data
                 Description = car.Description,
                 Horsepower = car.Horsepower,
                 Model = car.Model,
-                YearOfProduction = car.YearOfProduction
+                YearOfProduction = car.YearOfProduction,
+                TimeAdded = DateTime.Now
             });
             return context.SaveChanges() == 1;
         }

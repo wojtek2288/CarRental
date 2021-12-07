@@ -32,7 +32,8 @@ namespace CarRental.Data
                         Model = "Custom Model",
                         Description = "Taki fajny kolorowy i szybki",
                         Horsepower = 9999,
-                        YearOfProduction = 2040
+                        YearOfProduction = 2040,
+                        TimeAdded = new System.DateTime(2021, 12, 1)
                     }
                 });
 
