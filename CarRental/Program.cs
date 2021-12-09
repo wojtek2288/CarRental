@@ -30,7 +30,7 @@ namespace CarRental
                 try
                 {
                     var context = services.GetRequiredService<DatabaseContext>();
-                    DbInitializer.Initialize(context);
+                    context.Database.EnsureCreated();
                 }
                 catch (Exception ex)
                 {

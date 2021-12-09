@@ -1,4 +1,6 @@
-﻿namespace CarRental.Models
+﻿using System;
+
+namespace CarRental.Models
 {
     public class Car
     {
@@ -8,5 +10,6 @@
         public int Horsepower { get; set; }
         public int YearOfProduction { get; set; }
         public string Description { get; set; }
+        public DateTime TimeAdded { get; set; }
     }
 }
