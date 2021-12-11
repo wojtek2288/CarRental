@@ -1,0 +1,96 @@
+/* Provide sufficient contrast against white background */
+a {
+  color: #0366d6;
+}
+
+code {
+  color: #E01A76;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.home {
+    height: 100vh;
+    background-size: cover;
+    background-image: url('img/car-rental-home.jpg');
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-top: 0;
+    padding-top: 30vh;
+}
+
+.mb-3, .my-3 {
+    margin-bottom: 0 !important;
+}
+
+.nav-item{
+    margin-right: 2rem;
+}
+
+.home-text {
+    background-color: white;
+    width: 35vw;
+    padding: 4rem;
+    border-radius: 25px;
+    opacity: 0.8;
+}
+
+.home-text p {
+    font-size: 1.2rem;
+}
+
+.margin-top{
+    margin-top: 6vh;
+}
+
+.margin-bottom {
+    margin-bottom: 6vh;
+}
+
+.form-input{
+    margin-bottom: 2rem;
+}
+
+.alert-margin{
+    margin-top: 1rem;
+}
+
+.btn-text-home{
+    width: 150px;
+}
+
+.center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+@media (max-width: 1300px) {
+    .home{
+        padding-top: 26vh;
+    }
+    .home-text {
+        width: 55vw;
+    }
+}
+
+@media (max-width: 768px) {
+    .home{
+        padding-top: 20vh;
+    }
+    .home-text{
+        width: 70vw;
+    }
+}
+
+@media (max-width: 500px) {
+    .home-text {
+        width: 85vw;
+    }
+}
