@@ -28,5 +28,11 @@ namespace CarRental.Controllers
 
             return StatusCode(503);
         }
+
+        [HttpGet]
+        public IEnumerable<Car> Get()
+        {
+            return dbUtils.GetCars().ToArray();
+        }
     }
 }

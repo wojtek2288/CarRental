@@ -121,6 +121,9 @@ const NavMenu = (props) => {
 
                                 </NavItem>
                             )}
+                            <NavItem className='nav-item'>
+                                <Button onClick={() => props.history.push('/viewcars')}>View Cars</Button>
+                            </NavItem>
                         </ul>
                     </Collapse>
                 </Container>
