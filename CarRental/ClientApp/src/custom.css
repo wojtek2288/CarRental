@@ -94,3 +94,20 @@ code {
         width: 85vw;
     }
 }
+
+.search-text {
+    background-color: lightgrey;
+    padding: 1rem;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.details-font {
+    font-weight: 500;
+}
+
+.search-input {
+    margin-left: 10px;
+}
