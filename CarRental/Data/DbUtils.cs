@@ -12,6 +12,8 @@ namespace CarRental.Data
 
         public bool AddUser(POCO.User user)
         {
+            if (UserExists(user)) return false;
+
             context.Users.Add(new Models.User()
             {
                 Id = user.Id,
@@ -54,6 +56,26 @@ namespace CarRental.Data
             {
                 yield return (POCO.User)user;
             }
+        }
+
+        public bool UserExists(POCO.User user)
+        {
+            foreach (Models.User _user in context.Users)
+            {
+                if (user.AuthID == _user.AuthID || user.Email == _user.Email)
+                    return true;
+            }
+            return false;
+        }
+
+        public POCO.User FindUser(string AuthID)
+        {
+            foreach (Models.User user in context.Users)
+            {
+                if (user.AuthID == AuthID) return (POCO.User)user;
+            }
+
+            return null;
         }
 
         public DbUtils(DatabaseContext context)

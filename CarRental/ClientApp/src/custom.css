@@ -62,6 +62,15 @@ code {
 .btn-text-home{
     width: 150px;
 }
+
+.center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
 @media (max-width: 1300px) {
     .home{
         padding-top: 26vh;
@@ -84,4 +93,21 @@ code {
     .home-text {
         width: 85vw;
     }
+}
+
+.search-text {
+    background-color: lightgrey;
+    padding: 1rem;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.details-font {
+    font-weight: 500;
+}
+
+.search-input {
+    margin-left: 10px;
 }

@@ -31,7 +31,6 @@ namespace CarRental.Email
             request.Method = Method.POST;
             var response = client.Execute(request);
             return response;
-
         }
 
         public void SendToAll(string from, string subject, string text)
