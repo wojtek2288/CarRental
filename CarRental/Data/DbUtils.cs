@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using CarRental.ForeignAPI;
 
 namespace CarRental.Data
 {
@@ -47,6 +48,10 @@ namespace CarRental.Data
             foreach (Models.Car car in context.Cars)
             {
                 yield return (POCO.Car)car;
+            }
+            foreach(POCO.Car car in APIUtils.GetCars())
+            {
+                yield return car;
             }
         }
 

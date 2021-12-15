@@ -62,7 +62,7 @@ namespace CarRental.ForeignAPI
                     Brand = vehicle.brandName,
                     Description = vehicle.description,
                     Horsepower = vehicle.enginePower,
-                    Id = Guid.Parse(vehicle.id),
+                    Id = vehicle.id,
                     Model = vehicle.modelName,
                     YearOfProduction = vehicle.year
                 };
