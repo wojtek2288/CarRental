@@ -9,7 +9,7 @@ namespace CarRental.Models
             CLIENT,
             ADMINISTRATOR
         }
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public DateTime DriversLicenseDate { get; set; } 
         public DateTime DateOfBirth { get; set; }
         public string Location { get; set; }
