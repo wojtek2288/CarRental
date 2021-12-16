@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace CarRental.Data
 {
@@ -27,7 +28,7 @@ namespace CarRental.Data
                 {
                     new Models.Car
                     {
-                        Id = 1,
+                        Id = Guid.Parse("de8725ba-e24d-4bea-b3eb-61f459c4b0c3"),
                         Brand = "Lego",
                         Model = "Custom Model",
                         Description = "Taki fajny kolorowy i szybki",
@@ -42,7 +43,7 @@ namespace CarRental.Data
                 {
                     new Models.User
                     {
-                        Id = 1,
+                        Id = Guid.Parse("bbc591e4-eb41-4f8d-a030-1e892393224a"),
                         AuthID = "googleid2",
                         DateOfBirth = System.DateTime.Today,
                         DriversLicenseDate = System.DateTime.MinValue,
@@ -52,7 +53,7 @@ namespace CarRental.Data
                     },
                     new Models.User
                     {
-                        Id = 2,
+                        Id = Guid.Parse("c72d2e73-93b6-4ddb-bf6e-c778dd425e6b"),
                         AuthID = "googleid",
                         DateOfBirth = System.DateTime.Today,
                         DriversLicenseDate = System.DateTime.MinValue,
