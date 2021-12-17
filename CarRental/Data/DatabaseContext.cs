@@ -11,6 +11,7 @@ namespace CarRental.Data
 
         public DbSet<Models.User> Users { get; set; }
         public DbSet<Models.Car> Cars { get; set; }
+        public DbSet<Models.Rental> Rentals { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,6 +23,7 @@ namespace CarRental.Data
                 .HasIndex(c => c.Horsepower);
             modelBuilder.Entity<Models.Car>()
                 .HasIndex(c => c.YearOfProduction);
+
 
             modelBuilder.Entity<Models.Car>()
                 .HasData(new Models.Car[]
@@ -62,6 +64,8 @@ namespace CarRental.Data
                         Role = Models.User.UserRole.CLIENT
                     }
                 });
+
+
         }
     }
 }

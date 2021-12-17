@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel;
 using System.Net.Http;
+using CarRental.ForeignAPI;
+using System.Threading.Tasks;
 
 namespace CarRental.ForeignAPI
 {
@@ -43,7 +45,7 @@ namespace CarRental.ForeignAPI
             dynamic body = JsonConvert.DeserializeObject(response.Content);
 
             authorisationString = $"{body.token_type} {body.access_token}";
-            validUntil = DateTime.Now.AddSeconds(body.expires_in);
+            validUntil = DateTime.Now.AddSeconds((double)body.expires_in);
         }
 
         public static IEnumerable<Car> GetCars()
@@ -69,6 +71,32 @@ namespace CarRental.ForeignAPI
 
                 yield return car;
             }
+        }
+
+        public static Responses.GetPriceResponse GetPrice(Requests.GetPriceRequest reqBody, string id)
+        {
+            RestClient client = new RestClient("https://mini.rentcar.api.snet.com.pl/vehicle/" + id + "/GetPrice");
+            RestRequest request = new RestRequest(Method.POST);
+            request.AddHeader("Authorization", AuthorisationString);
+            request.AddJsonBody(reqBody);
+
+            var response = client.Execute(request);
+            Responses.GetPriceResponse body = JsonConvert.DeserializeObject<Responses.GetPriceResponse>(response.Content);
+
+            return body;
+        }
+
+        public static Responses.RentResponse RentCar(DateTime startDate, string id)
+        {
+            RestClient client = new RestClient("https://mini.rentcar.api.snet.com.pl/vehicles/Rent/" + id);
+            RestRequest request = new RestRequest(Method.POST);
+            request.AddHeader("Authorization", AuthorisationString);
+            request.AddJsonBody(new {startDate = startDate });
+
+            var response = client.Execute(request);
+            Responses.RentResponse body = JsonConvert.DeserializeObject<Responses.RentResponse>(response.Content);
+
+            return body;
         }
     }
 }

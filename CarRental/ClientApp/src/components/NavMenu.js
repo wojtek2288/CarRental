@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink, Button } from 'reactstrap';
 import { Link, withRouter } from 'react-router-dom';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
@@ -90,40 +90,38 @@ const NavMenu = (props) => {
         <header>
             <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" light>
                 <Container>
-                    <NavbarBrand tag={Link} to="/">CarRental</NavbarBrand>
+                    <NavbarBrand>CarRental</NavbarBrand>
                     <NavbarToggler onClick={e => { setToggleNavbar(!toggleNavbar) }} className="mr-2" />
                     <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!toggleNavbar} navbar>
                         <ul className="navbar-nav flex-grow">
-                            <NavItem className='nav-item'>
-                                <NavLink tag={Link} className="text-dark" to="/" >Home</NavLink>
-                            </NavItem>
                             {props.button === 'hide' ? null : (
-                                <NavItem className='nav-item'>
-                                    {props.text === 'Sign Out' ?
-                                        (<GoogleLogout
+                                <Fragment>
+                                    {props.logged === true ?
+                                        (<Fragment>
+                                            <NavItem className='nav-item'>
+                                                <NavLink tag={Link} className="text-dark" to="/viewcars" >Rent a Car</NavLink>
+                                            </NavItem>
+                                            <GoogleLogout
                                             clientId="626144450964-lgvp421untjh8h698e0pq5cvtpica9me.apps.googleusercontent.com"
                                             render={renderProps => (
-                                                <Button onClick={renderProps.onClick} disabled={renderProps.disabled} color='primary'> {props.text} </Button>
+                                                <Button onClick={renderProps.onClick} disabled={renderProps.disabled} color='primary'> Sign Out </Button>
                                             )}
                                             buttonText="Logout"
                                             onLogoutSuccess={logout}
-                                        />)
+                                            />
+                                        </Fragment>)
                                         :
                                         (<GoogleLogin
                                             clientId="626144450964-lgvp421untjh8h698e0pq5cvtpica9me.apps.googleusercontent.com"
                                             render={renderProps => (
-                                                <Button onClick={renderProps.onClick} disabled={renderProps.disabled} color='primary'> {props.text} </Button>
+                                                <Button onClick={renderProps.onClick} disabled={renderProps.disabled} color='primary'> Sign In </Button>
                                             )}
                                             onSuccess={responseGoogleSuccess}
                                             onFailure={responseGoogleFailure}
                                             cookiePolicy={'single_host_origin'}
                                         />)}
-
-                                </NavItem>
+                                </Fragment>
                             )}
-                            <NavItem className='nav-item'>
-                                <Button onClick={() => props.history.push('/viewcars')}>View Cars</Button>
-                            </NavItem>
                         </ul>
                     </Collapse>
                 </Container>

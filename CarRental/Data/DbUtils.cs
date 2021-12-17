@@ -43,6 +43,71 @@ namespace CarRental.Data
             return context.SaveChanges() == 1;
         }
 
+        public Models.Car FindCarModel(Guid Id)
+        {
+            foreach(var car in context.Cars)
+            {
+                if (car.Id == Id)
+                    return car;
+            }
+            return null;
+        }
+
+        public Models.User FindUserModel(Guid Id)
+        {
+            foreach (var user in context.Users)
+            {
+                if (user.Id == Id)
+                    return user;
+            }
+            return null;
+        }
+
+        public bool AddRental(POCO.Rental rental)
+        {
+            Models.Rental newRental = new Models.Rental()
+            {
+                Id = rental.Id,
+                from = rental.from,
+                to = rental.to,
+                isConfirmed = rental.isConfirmed,
+                price = rental.price,
+                currency = rental.currency,
+                user = FindUserModel(rental.user.Id),
+                car = FindCarModel(rental.car.Id)
+            };
+
+            context.Rentals.Add(newRental);
+            return context.SaveChanges() == 1;
+        }
+
+        public POCO.Rental FindRental(Guid Id)
+        {
+            foreach(var rental in context.Rentals)
+            {
+                if (rental.Id == Id)
+                {
+                    rental.car = FindCarModel(rental.carId);
+                    rental.user = FindUserModel(rental.userId);
+                    return (POCO.Rental)rental;
+                }
+            }
+            return null;
+        }
+
+        public bool ConfirmRental(Guid Id)
+        {
+            foreach (var rental in context.Rentals)
+            {
+                if (rental.Id == Id)
+                {
+                    rental.isConfirmed = true;
+                    break;
+                }
+            }
+            return context.SaveChanges() == 1;
+        }
+
         public IEnumerable<POCO.Car> GetCars()
         {
             foreach (Models.Car car in context.Cars)
@@ -53,6 +118,16 @@ namespace CarRental.Data
             {
                 yield return car;
             }
+        }
+
+        public POCO.Car FindCar(Guid id)
+        {
+            foreach(var car in context.Cars)
+            {
+                if (car.Id == id)
+                    return (POCO.Car)car;
+            }
+            return null;
         }
 
         public IEnumerable<POCO.User> GetUsers()

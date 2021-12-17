@@ -6,7 +6,7 @@ import NavMenu from './NavMenu';
 const ExampleUser = (props) => {
     return (
         <Fragment>
-            <NavMenu text='Sign Out' />
+            <NavMenu logged={true} />
             <div>This is an example of page avaliable only for logged users {props.text}</div>
         </Fragment>
         )

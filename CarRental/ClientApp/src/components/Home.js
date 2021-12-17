@@ -78,7 +78,7 @@ const Home = (props) => {
 
     return (
         <Fragment>
-            <NavMenu text='Sign In'/>
+            <NavMenu logged={false}/>
             <div className='home'>
                 <Container>
                     <div className='home-text'>

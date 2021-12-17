@@ -63,7 +63,7 @@ const AddCar = (props) => {
 
     return (
         <Fragment>
-            <NavMenu text='Sign Out'/>
+            <NavMenu logged={true}/>
             <Container className='margin-top'>
                 <h1 className='form-input'>Add a Car</h1>
                 {displayAlert === "success" ? <Alert className='alert-margin'>Successfully Added Car</Alert> : null}

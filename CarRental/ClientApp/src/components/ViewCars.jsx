@@ -1,10 +1,11 @@
 ﻿import React, { Fragment, useState, useEffect } from 'react';
-import { CardTitle, Container, FormGroup, Input } from 'reactstrap';
+import { CardTitle, Container, FormGroup, Input, Spinner } from 'reactstrap';
 import CarTable from './CarTable'
 import NavMenu from './NavMenu';
 
 export default function ViewCars() {
     const [data, setData] = useState([])
+    const [loading, setLoading] = useState(true);
     const [brand, setBrand] = useState("")
     const [model, setModel] = useState("")
     const [sortColumn, setSortColumn] = useState("")
@@ -12,7 +13,8 @@ export default function ViewCars() {
     useEffect(() => {
         fetch('cars')
             .then((response) => response.json())
-            .then((json) => setData(json));
+            .then((json) => setData(json))
+            .then(() => setLoading(false));
     }, [])
 
     function search(rows) {
@@ -64,6 +66,7 @@ export default function ViewCars() {
 
     function customview() {
         console.log(sortColumn)
+        console.log(data);
         var rows = data
         var res;
         if (sortColumn != '') {
@@ -80,7 +83,7 @@ export default function ViewCars() {
 
     return (
         <Fragment>
-            <NavMenu text='Sign Out' />
+            <NavMenu logged={true} />
             <Container className='margin-top'>
                 <div>
                     <CardTitle tag="h5"> Search </CardTitle>
@@ -119,9 +122,11 @@ export default function ViewCars() {
                     </FormGroup>
                 </div>
             </Container>
-            <Container className='margin-top'>
+            {loading == true ?
+            (<Spinner className="center" />) :
+            (<Container className='margin-top'>
                 {contents}
-            </Container>
+            </Container>)}
         </Fragment>
     );
 }
