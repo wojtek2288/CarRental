@@ -84,7 +84,13 @@ namespace CarRental.Data
         {
             Models.Car found = context.Cars.Find(id);
 
-            if (found == null) return null;
+            if (found == null)
+            {
+                foreach(POCO.Car car in APIUtils.GetCars())
+                {
+                    if (car.Id == id) return car;
+                }
+            }
             return (POCO.Car)found;
         }
 
@@ -105,11 +111,18 @@ namespace CarRental.Data
             return matchingUsers.Any();
         }
 
-        public POCO.User FindUser(string AuthID)
+        public POCO.User FindUserByAuthID(string AuthID)
         {
             return (from user in context.Users
                     where user.AuthID == AuthID
                     select (POCO.User)user).FirstOrDefault();
+        }
+
+        public POCO.User FindUser(Guid id)
+        {
+            var found = context.Users.Find(id);
+            if(found == null) return null;
+            return (POCO.User)found;
         }
 
         public POCO.Quota FindQuota(Guid id)

@@ -9,6 +9,7 @@ using CarRental.POCO;
 using CarRental.ForeignAPI;
 using CarRental.API;
 using Newtonsoft.Json.Linq;
+using CarRental.Email;
 
 namespace CarRental.Controllers
 {
@@ -35,7 +36,7 @@ namespace CarRental.Controllers
         [HttpPost("GetPrice/{user_id}/{car_id}")]
         public IActionResult GetPrice([FromBody] Dictionary<string, DateTime> dates, string user_id, string car_id)
         {
-            User user = dbUtils.FindUser(user_id);
+            User user = dbUtils.FindUserByAuthID(user_id);
             if (user == null) return StatusCode(404);
 
             Guid carId = Guid.Parse(car_id);
@@ -80,7 +81,7 @@ namespace CarRental.Controllers
 
             if (dbUtils.FindCar(quota.CarId) != null)
             {
-                if(dbUtils.AddRental(new Rental()
+                Rental rental = new Rental()
                 {
                     CarId = quota.CarId,
                     UserId = quota.UserId,
@@ -88,14 +89,19 @@ namespace CarRental.Controllers
                     Price = quota.Price,
                     From = startDate,
                     To = startDate.AddDays(quota.RentDuration),
-                })) return Ok();
+                };
+                if (dbUtils.AddRental(rental))
+                {
+                    new EmailSender(dbUtils).SendRentalEmail(rental);
+                    return Ok();
+                }
                 return StatusCode(500);
             }
             else
             {
                 Guid rentalId = APIUtils.RentCar(startDate, Id);
-                if(rentalId == Guid.Empty) return StatusCode(500);
-                if(dbUtils.AddRental(new Rental()
+                if (rentalId == Guid.Empty) return StatusCode(500);
+                Rental rental = new Rental()
                 {
                     Id = rentalId,
                     CarId = quota.CarId,
@@ -104,7 +110,12 @@ namespace CarRental.Controllers
                     From = startDate,
                     To = startDate.AddDays(quota.RentDuration),
                     Price = quota.Price
-                })) return Ok();
+                };
+                if (dbUtils.AddRental(rental))
+                {
+                    new EmailSender(dbUtils).SendRentalEmail(rental);
+                    return Ok();
+                }
                 return StatusCode(500);
             }
         }

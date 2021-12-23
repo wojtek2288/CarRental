@@ -60,7 +60,7 @@ namespace CarRental.Controllers
             else if (response.error != null)
                 return StatusCode(500);
 
-            user = dbUtils.FindUser(AuthID.ToString());
+            user = dbUtils.FindUserByAuthID(AuthID.ToString());
             if (user == null) return StatusCode(200, "NotRegistered");
 
             //Zwrocenie roli
