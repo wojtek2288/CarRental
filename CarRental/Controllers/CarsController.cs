@@ -46,6 +46,7 @@ namespace CarRental.Controllers
             if (car == null)
             {
                 Quota quota = APIUtils.GetPrice(carId, user, rentDuration);
+                if (quota == null) return StatusCode(500);
                 quota = dbUtils.AddQuota(quota);
                 return Ok(quota);
             }
@@ -79,7 +80,7 @@ namespace CarRental.Controllers
 
             if (dbUtils.FindCar(quota.CarId) != null)
             {
-                dbUtils.AddRental(new Rental()
+                if(dbUtils.AddRental(new Rental()
                 {
                     CarId = quota.CarId,
                     UserId = quota.UserId,
@@ -87,13 +88,14 @@ namespace CarRental.Controllers
                     Price = quota.Price,
                     From = startDate,
                     To = startDate.AddDays(quota.RentDuration),
-                });
-                return Ok();
+                })) return Ok();
+                return StatusCode(500);
             }
             else
             {
                 Guid rentalId = APIUtils.RentCar(startDate, Id);
-                dbUtils.AddRental(new Rental()
+                if(rentalId == Guid.Empty) return StatusCode(500);
+                if(dbUtils.AddRental(new Rental()
                 {
                     Id = rentalId,
                     CarId = quota.CarId,
@@ -102,8 +104,8 @@ namespace CarRental.Controllers
                     From = startDate,
                     To = startDate.AddDays(quota.RentDuration),
                     Price = quota.Price
-                });
-                return Ok();
+                })) return Ok();
+                return StatusCode(500);
             }
         }
 

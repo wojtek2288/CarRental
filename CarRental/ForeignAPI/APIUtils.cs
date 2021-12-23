@@ -42,6 +42,13 @@ namespace CarRental.ForeignAPI
 
             var response = client.Execute(request);
 
+            if (!response.IsSuccessful)
+            {
+                authorisationString = null;
+                validUntil = DateTime.MinValue;
+                return;
+            }
+
             dynamic body = JsonConvert.DeserializeObject(response.Content);
 
             authorisationString = $"{body.token_type} {body.access_token}";
@@ -54,6 +61,8 @@ namespace CarRental.ForeignAPI
 
             RestRequest request = new RestRequest(Method.GET);
             var response = client.Execute(request);
+
+            if (!response.IsSuccessful) yield break;
 
             dynamic body = JsonConvert.DeserializeObject(response.Content);
 
@@ -80,7 +89,7 @@ namespace CarRental.ForeignAPI
             request.AddHeader("Authorization", AuthorisationString);
 
             DateTime today = DateTime.Now;
-            
+
             request.AddJsonBody(new
             {
                 age = today.Year - user.DateOfBirth.Year,
@@ -92,6 +101,8 @@ namespace CarRental.ForeignAPI
             });
 
             var response = client.Execute(request);
+
+            if (response.IsSuccessful) return null;
 
             dynamic body = JsonConvert.DeserializeObject(response.Content);
             return new Quota()
@@ -114,6 +125,7 @@ namespace CarRental.ForeignAPI
             request.AddJsonBody(new { startDate = startDate });
 
             var response = client.Execute(request);
+            if (!response.IsSuccessful) return Guid.Empty;
             dynamic body = JsonConvert.DeserializeObject(response.Content);
 
             return body.rentId;
