@@ -33,7 +33,7 @@ namespace CarRental.Controllers
         }
 
         [HttpPost("GetPrice/{user_id}/{car_id}")]
-        public IActionResult GetPrice([FromBody] Requests.RentDates dates, string user_id, string car_id)
+        public IActionResult GetPrice([FromBody] Dictionary<string, DateTime> dates, string user_id, string car_id)
         {
             User user = dbUtils.FindUser(user_id);
             if (user == null) return StatusCode(404);
@@ -41,7 +41,7 @@ namespace CarRental.Controllers
             Guid carId = Guid.Parse(car_id);
             Car car = dbUtils.FindCar(carId);
 
-            TimeSpan rentDuration = dates.to - dates.from;
+            TimeSpan rentDuration = dates["to"] - dates["from"];
 
             if (car == null)
             {

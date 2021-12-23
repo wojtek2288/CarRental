@@ -78,8 +78,10 @@ namespace CarRental.ForeignAPI
             RestClient client = new RestClient("https://mini.rentcar.api.snet.com.pl/vehicle/" + carId + "/GetPrice");
             RestRequest request = new RestRequest(Method.POST);
             request.AddHeader("Authorization", AuthorisationString);
+
             DateTime today = DateTime.Now;
-            Requests.GetPriceRequest requestBody = new Requests.GetPriceRequest()
+            
+            request.AddJsonBody(new
             {
                 age = today.Year - user.DateOfBirth.Year,
                 yearsOfHavingDriverLicense = today.Year - user.DriversLicenseDate.Year,
@@ -87,11 +89,11 @@ namespace CarRental.ForeignAPI
                 location = user.Location,
                 currentlyRentedCount = 0,
                 overallRentedCount = 0
-            };
-            request.AddJsonBody(requestBody);
-            var response = client.Execute(request);
-            dynamic body = JsonConvert.DeserializeObject(response.Content);
+            });
 
+            var response = client.Execute(request);
+
+            dynamic body = JsonConvert.DeserializeObject(response.Content);
             return new Quota()
             {
                 Price = body.price,
