@@ -102,7 +102,7 @@ namespace CarRental.ForeignAPI
 
             var response = client.Execute(request);
 
-            if (response.IsSuccessful) return null;
+            if (!response.IsSuccessful) return null;
 
             dynamic body = JsonConvert.DeserializeObject(response.Content);
             return new Quota()
