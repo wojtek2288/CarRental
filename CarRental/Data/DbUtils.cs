@@ -68,13 +68,12 @@ namespace CarRental.Data
             Models.Rental newRental = new Models.Rental()
             {
                 Id = rental.Id,
-                from = rental.from,
-                to = rental.to,
-                isConfirmed = rental.isConfirmed,
-                price = rental.price,
-                currency = rental.currency,
-                user = FindUserModel(rental.user.Id),
-                car = FindCarModel(rental.car.Id)
+                From = rental.From,
+                To = rental.To,
+                Price = rental.Price,
+                Currency = rental.Currency,
+                UserId = rental.UserId,
+                CarId = rental.CarId
             };
 
             context.Rentals.Add(newRental);
@@ -83,29 +82,9 @@ namespace CarRental.Data
 
         public POCO.Rental FindRental(Guid Id)
         {
-            foreach(var rental in context.Rentals)
-            {
-                if (rental.Id == Id)
-                {
-                    rental.car = FindCarModel(rental.carId);
-                    rental.user = FindUserModel(rental.userId);
-                    return (POCO.Rental)rental;
-                }
-            }
-            return null;
-        }
-
-        public bool ConfirmRental(Guid Id)
-        {
-            foreach (var rental in context.Rentals)
-            {
-                if (rental.Id == Id)
-                {
-                    rental.isConfirmed = true;
-                    break;
-                }
-            }
-            return context.SaveChanges() == 1;
+            Models.Rental found = context.Rentals.Find(Id);
+            if (found == null) return null;
+            return (POCO.Rental)found;
         }
 
         public IEnumerable<POCO.Car> GetCars()
@@ -156,6 +135,29 @@ namespace CarRental.Data
             }
 
             return null;
+        }
+
+        public POCO.Quota FindQuota(Guid id)
+        {
+            Models.Quota found = context.Quotas.Find(id);
+            if(found == null) return null;
+            return (POCO.Quota)found;
+        }
+
+        public POCO.Quota AddQuota(POCO.Quota quota)
+        {
+            var entry = context.Quotas.Add(new Models.Quota()
+            {
+                Id = quota.Id,
+                Currency = quota.Currency,
+                ExpiredAt = quota.ExpiredAt,
+                Price = quota.Price,
+                CarId = quota.CarId,
+                UserId = quota.UserId,
+                RentDuration = quota.RentDuration,
+            });
+            if(context.SaveChanges() != 1) return null;
+            return (POCO.Quota)entry.Entity;
         }
 
         public DbUtils(DatabaseContext context)

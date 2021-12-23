@@ -33,73 +33,77 @@ namespace CarRental.Controllers
         }
 
         [HttpPost("GetPrice/{user_id}/{car_id}")]
-        public IActionResult GetPrice([FromBody]Requests.RentDates dates, string user_id, string car_id)
+        public IActionResult GetPrice([FromBody] Requests.RentDates dates, string user_id, string car_id)
         {
-            var today = DateTime.Now;
-            POCO.User user = dbUtils.FindUser(user_id);
-            POCO.Car car = dbUtils.FindCar(Guid.Parse(car_id));
-            Responses.GetPriceResponse response;
+            User user = dbUtils.FindUser(user_id);
+            if (user == null) return StatusCode(404);
 
-            Requests.GetPriceRequest request = new Requests.GetPriceRequest();
-            request.age = today.Year - user.DateOfBirth.Year;
-            request.yearsOfHavingDriverLicense = today.Year - user.DriversLicenseDate.Year;
-            request.rentDuration = dates.to.DayOfYear - dates.from.DayOfYear;
-            request.location = user.Location;
-            request.currentlyRentedCount = 0;
-            request.overallRentedCount = 0;
+            Guid carId = Guid.Parse(car_id);
+            Car car = dbUtils.FindCar(carId);
 
-            if (car == null || user == null)
+            TimeSpan rentDuration = dates.to - dates.from;
+
+            if (car == null)
             {
-                response = APIUtils.GetPrice(request, car_id);
-                return Ok(response);
+                Quota quota = APIUtils.GetPrice(carId, user, rentDuration);
+                quota = dbUtils.AddQuota(quota);
+                return Ok(quota);
             }
             else
             {
-                response = Price.CalculatePrice(request, car);
-                POCO.Rental newRental = new POCO.Rental()
-                {
-                    Id = Guid.NewGuid(),
-                    from = dates.from,
-                    to = dates.to,
-                    price = response.price,
-                    currency = response.currency,
-                    isConfirmed = false,
-                    car = car,
-                    user = user
-                };
-                if (dbUtils.AddRental(newRental))
-                {
-                    response.quotaId = newRental.Id.ToString();
-                    return Ok(response);
-                }
-            }
+                (int price, string currency) = Price.CalculatePrice(user, rentDuration, car);
 
-            return StatusCode(500);
+                Quota quota = new Quota()
+                {
+                    Currency = currency,
+                    Price = price,
+                    ExpiredAt = DateTime.Now + TimeSpan.FromDays(1),
+                    UserId = user.Id,
+                    CarId = car.Id,
+                    RentDuration = (int)rentDuration.TotalDays
+                };
+
+                quota = dbUtils.AddQuota(quota);
+
+                if (quota == null) return StatusCode(500);
+
+                return Ok(quota);
+            }
         }
 
-        [HttpPost("Rent/{quoteId}")]
-        public IActionResult RentCar([FromBody]DateTime startDate, string quoteId)
+        [HttpPost("Rent/{quotaId}")]
+        public IActionResult RentCar([FromBody] DateTime startDate, string quotaId)
         {
-            Guid Id = Guid.Parse(quoteId);
-            POCO.Rental rental = dbUtils.FindRental(Id);
+            Guid Id = Guid.Parse(quotaId);
+            Quota quota = dbUtils.FindQuota(Id);
 
-            if (rental != null)
+            if (dbUtils.FindCar(quota.CarId) != null)
             {
-                dbUtils.ConfirmRental(Id);
-                Responses.RentResponse response = new Responses.RentResponse()
+                dbUtils.AddRental(new Rental()
                 {
-                    quoteId = rental.Id.ToString(),
-                    rentId = rental.Id.ToString(),
-                    rentAt = DateTime.Now,
-                    startDate = rental.from,
-                    endDate = rental.to
-                };
-                return Ok(response);
+                    CarId = quota.CarId,
+                    UserId = quota.UserId,
+                    Currency = quota.Currency,
+                    Price = quota.Price,
+                    From = startDate,
+                    To = startDate.AddDays(quota.RentDuration),
+                });
+                return Ok();
             }
             else
             {
-                Responses.RentResponse response = APIUtils.RentCar(startDate, quoteId);
-                return Ok(response);
+                Guid rentalId = APIUtils.RentCar(startDate, Id);
+                dbUtils.AddRental(new Rental()
+                {
+                    Id = rentalId,
+                    CarId = quota.CarId,
+                    UserId = quota.UserId,
+                    Currency = quota.Currency,
+                    From = startDate,
+                    To = startDate.AddDays(quota.RentDuration),
+                    Price = quota.Price
+                });
+                return Ok();
             }
         }
 
