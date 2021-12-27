@@ -4,6 +4,7 @@ using System;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using CarRental.ForeignAPI;
+using System.Linq;
 
 namespace CarRental.Data
 {
@@ -43,38 +44,17 @@ namespace CarRental.Data
             return context.SaveChanges() == 1;
         }
 
-        public Models.Car FindCarModel(Guid Id)
-        {
-            foreach(var car in context.Cars)
-            {
-                if (car.Id == Id)
-                    return car;
-            }
-            return null;
-        }
-
-        public Models.User FindUserModel(Guid Id)
-        {
-            foreach (var user in context.Users)
-            {
-                if (user.Id == Id)
-                    return user;
-            }
-            return null;
-        }
-
         public bool AddRental(POCO.Rental rental)
         {
             Models.Rental newRental = new Models.Rental()
             {
                 Id = rental.Id,
-                from = rental.from,
-                to = rental.to,
-                isConfirmed = rental.isConfirmed,
-                price = rental.price,
-                currency = rental.currency,
-                user = FindUserModel(rental.user.Id),
-                car = FindCarModel(rental.car.Id)
+                From = rental.From,
+                To = rental.To,
+                Price = rental.Price,
+                Currency = rental.Currency,
+                UserId = rental.UserId,
+                CarId = rental.CarId
             };
 
             context.Rentals.Add(newRental);
@@ -83,29 +63,9 @@ namespace CarRental.Data
 
         public POCO.Rental FindRental(Guid Id)
         {
-            foreach(var rental in context.Rentals)
-            {
-                if (rental.Id == Id)
-                {
-                    rental.car = FindCarModel(rental.carId);
-                    rental.user = FindUserModel(rental.userId);
-                    return (POCO.Rental)rental;
-                }
-            }
-            return null;
-        }
-
-        public bool ConfirmRental(Guid Id)
-        {
-            foreach (var rental in context.Rentals)
-            {
-                if (rental.Id == Id)
-                {
-                    rental.isConfirmed = true;
-                    break;
-                }
-            }
-            return context.SaveChanges() == 1;
+            Models.Rental found = context.Rentals.Find(Id);
+            if (found == null) return null;
+            return (POCO.Rental)found;
         }
 
         public IEnumerable<POCO.Car> GetCars()
@@ -114,7 +74,7 @@ namespace CarRental.Data
             {
                 yield return (POCO.Car)car;
             }
-            foreach(POCO.Car car in APIUtils.GetCars())
+            foreach (POCO.Car car in APIUtils.GetCars())
             {
                 yield return car;
             }
@@ -122,12 +82,16 @@ namespace CarRental.Data
 
         public POCO.Car FindCar(Guid id)
         {
-            foreach(var car in context.Cars)
+            Models.Car found = context.Cars.Find(id);
+
+            if (found == null)
             {
-                if (car.Id == id)
-                    return (POCO.Car)car;
+                foreach(POCO.Car car in APIUtils.GetCars())
+                {
+                    if (car.Id == id) return car;
+                }
             }
-            return null;
+            return (POCO.Car)found;
         }
 
         public IEnumerable<POCO.User> GetUsers()
@@ -140,22 +104,48 @@ namespace CarRental.Data
 
         public bool UserExists(POCO.User user)
         {
-            foreach (Models.User _user in context.Users)
-            {
-                if (user.AuthID == _user.AuthID || user.Email == _user.Email)
-                    return true;
-            }
-            return false;
+            var matchingUsers =
+                from u in context.Users
+                where u.AuthID == user.AuthID || u.Email == user.Email
+                select u;
+            return matchingUsers.Any();
         }
 
-        public POCO.User FindUser(string AuthID)
+        public POCO.User FindUserByAuthID(string AuthID)
         {
-            foreach (Models.User user in context.Users)
-            {
-                if (user.AuthID == AuthID) return (POCO.User)user;
-            }
+            return (from user in context.Users
+                    where user.AuthID == AuthID
+                    select (POCO.User)user).FirstOrDefault();
+        }
 
-            return null;
+        public POCO.User FindUser(Guid id)
+        {
+            var found = context.Users.Find(id);
+            if(found == null) return null;
+            return (POCO.User)found;
+        }
+
+        public POCO.Quota FindQuota(Guid id)
+        {
+            Models.Quota found = context.Quotas.Find(id);
+            if (found == null) return null;
+            return (POCO.Quota)found;
+        }
+
+        public POCO.Quota AddQuota(POCO.Quota quota)
+        {
+            var entry = context.Quotas.Add(new Models.Quota()
+            {
+                Id = quota.Id,
+                Currency = quota.Currency,
+                ExpiredAt = quota.ExpiredAt,
+                Price = quota.Price,
+                CarId = quota.CarId,
+                UserId = quota.UserId,
+                RentDuration = quota.RentDuration,
+            });
+            if (context.SaveChanges() != 1) return null;
+            return (POCO.Quota)entry.Entity;
         }
 
         public DbUtils(DatabaseContext context)

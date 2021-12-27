@@ -40,5 +40,18 @@ namespace CarRental.Email
                 SendEmail(user.Email, from, subject, text);
             }
         }
+
+        internal void SendRentalEmail(Rental rental)
+        {
+            User user = dbUtils.FindUser(rental.UserId);
+            Car car = dbUtils.FindCar(rental.CarId);
+
+            SendEmail(user.Email, "carrental@carrentalservice.com", "Car rented",
+                $"You just rented a car for {rental.Price} {rental.Currency} in the period from {rental.From} to {rental.To}.\n" +
+                $"Car: {car.Brand} {car.Model}\n" +
+                $"{car.Description}\n" +
+                $"Have a nice day!"
+                );
+        }
     }
 }

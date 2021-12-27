@@ -8,14 +8,11 @@ namespace CarRental.Models
     public class Rental
     {
         public Guid Id { get; set; }
-        public DateTime from { get; set; }
-        public DateTime to { get; set; }
-        public double price { get; set; }
-        public string currency { get; set; }
-        public bool isConfirmed { get; set; }
-        public Guid carId { get; set; }
-        public Car car { get; set; }
-        public Guid userId { get; set; } 
-        public User user { get; set; }
+        public DateTime From { get; set; }
+        public DateTime To { get; set; }
+        public double Price { get; set; }
+        public string Currency { get; set; }
+        public Guid CarId { get; set; }
+        public Guid UserId { get; set; } 
     }
 }

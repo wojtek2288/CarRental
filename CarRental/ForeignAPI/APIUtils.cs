@@ -17,7 +17,7 @@ namespace CarRental.ForeignAPI
         {
             get
             {
-                if(authorisationString != null && DateTime.Now < validUntil)
+                if (authorisationString != null && DateTime.Now < validUntil)
                 {
                     return authorisationString;
                 }
@@ -42,6 +42,13 @@ namespace CarRental.ForeignAPI
 
             var response = client.Execute(request);
 
+            if (!response.IsSuccessful)
+            {
+                authorisationString = null;
+                validUntil = DateTime.MinValue;
+                return;
+            }
+
             dynamic body = JsonConvert.DeserializeObject(response.Content);
 
             authorisationString = $"{body.token_type} {body.access_token}";
@@ -55,9 +62,11 @@ namespace CarRental.ForeignAPI
             RestRequest request = new RestRequest(Method.GET);
             var response = client.Execute(request);
 
+            if (!response.IsSuccessful) yield break;
+
             dynamic body = JsonConvert.DeserializeObject(response.Content);
 
-            foreach(dynamic vehicle in body.vehicles)
+            foreach (dynamic vehicle in body.vehicles)
             {
                 Car car = new()
                 {
@@ -73,30 +82,53 @@ namespace CarRental.ForeignAPI
             }
         }
 
-        public static Responses.GetPriceResponse GetPrice(Requests.GetPriceRequest reqBody, string id)
+        public static Quota GetPrice(Guid carId, User user, TimeSpan rentDuration)
         {
-            RestClient client = new RestClient("https://mini.rentcar.api.snet.com.pl/vehicle/" + id + "/GetPrice");
+            RestClient client = new RestClient("https://mini.rentcar.api.snet.com.pl/vehicle/" + carId + "/GetPrice");
             RestRequest request = new RestRequest(Method.POST);
             request.AddHeader("Authorization", AuthorisationString);
-            request.AddJsonBody(reqBody);
+
+            DateTime today = DateTime.Now;
+
+            request.AddJsonBody(new
+            {
+                age = today.Year - user.DateOfBirth.Year,
+                yearsOfHavingDriverLicense = today.Year - user.DriversLicenseDate.Year,
+                rentDuration = (int)rentDuration.TotalDays,
+                location = user.Location,
+                currentlyRentedCount = 0,
+                overallRentedCount = 0
+            });
 
             var response = client.Execute(request);
-            Responses.GetPriceResponse body = JsonConvert.DeserializeObject<Responses.GetPriceResponse>(response.Content);
 
-            return body;
+            if (!response.IsSuccessful) return null;
+
+            dynamic body = JsonConvert.DeserializeObject(response.Content);
+            return new Quota()
+            {
+                Price = body.price,
+                Currency = body.currency,
+                Id = body.quotaId,
+                ExpiredAt = body.expiredAt,
+                CarId = carId,
+                UserId = user.Id,
+                RentDuration = (int)rentDuration.TotalDays
+            };
         }
 
-        public static Responses.RentResponse RentCar(DateTime startDate, string id)
+        public static Guid RentCar(DateTime startDate, Guid quotaId)
         {
-            RestClient client = new RestClient("https://mini.rentcar.api.snet.com.pl/vehicles/Rent/" + id);
+            RestClient client = new RestClient("https://mini.rentcar.api.snet.com.pl/vehicles/Rent/" + quotaId);
             RestRequest request = new RestRequest(Method.POST);
             request.AddHeader("Authorization", AuthorisationString);
-            request.AddJsonBody(new {startDate = startDate });
+            request.AddJsonBody(new { startDate = startDate });
 
             var response = client.Execute(request);
-            Responses.RentResponse body = JsonConvert.DeserializeObject<Responses.RentResponse>(response.Content);
+            if (!response.IsSuccessful) return Guid.Empty;
+            dynamic body = JsonConvert.DeserializeObject(response.Content);
 
-            return body;
+            return body.rentId;
         }
     }
 }

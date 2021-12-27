@@ -50,7 +50,7 @@ const RentModal = (props) => {
             setText("Rent now for: " + res.data.price + " " + res.data.currency);
             setCheckingPrice(false);
             setRenting(true);
-            setquotaId(res.data.quotaId);
+            setquotaId(res.data.id);
             setLoading(false);
         }
         catch (err) {
