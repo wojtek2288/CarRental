@@ -11,7 +11,7 @@ namespace CarRental.API
     {
         public static (int price, string currency) CalculatePrice(User user, TimeSpan rentDuration, Car car)
         {
-            return (450 * (int)rentDuration.TotalDays, "PLN");
+            return (300 * (int)rentDuration.TotalDays - 2*(DateTime.Now.Year - user.DriversLicenseDate.Year), "PLN");
         }
     }
 }

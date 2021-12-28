@@ -78,10 +78,11 @@ namespace CarRental.Controllers
         {
             Guid Id = Guid.Parse(quotaId);
             Quota quota = dbUtils.FindQuota(Id);
+            Rental rental;
 
             if (dbUtils.FindCar(quota.CarId) != null)
             {
-                Rental rental = new Rental()
+                rental = new Rental()
                 {
                     CarId = quota.CarId,
                     UserId = quota.UserId,
@@ -90,18 +91,12 @@ namespace CarRental.Controllers
                     From = startDate,
                     To = startDate.AddDays(quota.RentDuration),
                 };
-                if (dbUtils.AddRental(rental))
-                {
-                    new EmailSender(dbUtils).SendRentalEmail(rental);
-                    return Ok();
-                }
-                return StatusCode(500);
             }
             else
             {
                 Guid rentalId = APIUtils.RentCar(startDate, Id);
                 if (rentalId == Guid.Empty) return StatusCode(500);
-                Rental rental = new Rental()
+                rental = new Rental()
                 {
                     Id = rentalId,
                     CarId = quota.CarId,
@@ -111,12 +106,23 @@ namespace CarRental.Controllers
                     To = startDate.AddDays(quota.RentDuration),
                     Price = quota.Price
                 };
+            }
+
+            if(dbUtils.VerifyRental(rental))
+            {
                 if (dbUtils.AddRental(rental))
                 {
                     new EmailSender(dbUtils).SendRentalEmail(rental);
                     return Ok();
                 }
-                return StatusCode(500);
+                else
+                {
+                    return StatusCode(500);
+                }
+            }
+            else
+            {
+                return BadRequest();
             }
         }
 
