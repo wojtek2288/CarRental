@@ -8,6 +8,7 @@ using CarRental.Data;
 using CarRental.POCO;
 using Microsoft.Extensions.Primitives;
 using RestSharp;
+using Microsoft.AspNetCore.Http;
 
 namespace CarRental.Controllers
 {
@@ -34,21 +35,25 @@ namespace CarRental.Controllers
             dbUtils = new DbUtils(context);
         }
 
+        /// <summary>
+        /// Verifies user.
+        /// </summary>
+        /// <response code="200">Success</response>
+        /// <response code="400">Token or ID not provided in header</response>
+        /// <response code="401">Token expired</response>
         [HttpGet]
-        public async Task<IActionResult> Get()
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> Get([FromHeader]string AuthID, [FromHeader]string TokenID)
         {
-            StringValues TokenID;
-            StringValues AuthID;
             POCO.User user;
-
-            //Weryfikacja headerow
-            if (!Request.Headers.TryGetValue("AuthID", out AuthID)) return StatusCode(400);
-            if (!Request.Headers.TryGetValue("TokenID", out TokenID)) return StatusCode(400);
 
             //Weryfikacja tokena przez google
             RestClient client = new RestClient();
             client.BaseUrl = new Uri("https://www.googleapis.com/oauth2/v3/");
-            var request = new RestRequest("tokeninfo").AddParameter("id_token", TokenID.ToString());
+            var request = new RestRequest("tokeninfo").AddParameter("id_token", TokenID);
 
             var response = await client.GetAsync<GoogleResponse>(request);
 

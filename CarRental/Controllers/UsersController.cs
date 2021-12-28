@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CarRental.Data;
 using CarRental.POCO;
+using Microsoft.AspNetCore.Http;
 
 namespace CarRental.Controllers
 {
@@ -21,7 +22,13 @@ namespace CarRental.Controllers
             dbUtils = new DbUtils(context);
         }
 
+        /// <summary>
+        /// Adds a new user.
+        /// </summary>
+        /// <response code="200">Success</response>
         [HttpPost("clients")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(503)]
         public ActionResult Post([FromBody] User NewUser)
         {
             NewUser.Role = POCO.User.UserRole.CLIENT;

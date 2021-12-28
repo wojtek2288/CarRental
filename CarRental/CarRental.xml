@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CarRental</name>
+    </assembly>
+    <members>
+        <member name="M:CarRental.Controllers.AuthController.Get(System.String,System.String)">
+            <summary>
+            Verifies user.
+            </summary>
+            <response code="200">Success</response>
+            <response code="400">Token or ID not provided in header</response>
+            <response code="401">Token expired</response>
+        </member>
+        <member name="M:CarRental.Controllers.CarsController.Post(CarRental.POCO.Car)">
+            <summary>
+            Adds a new car.
+            </summary>
+        </member>
+        <member name="M:CarRental.Controllers.CarsController.GetPrice(CarRental.Controllers.CarsController.Dates,System.String,System.String)">
+            <summary>
+            Checks price of rental.
+            </summary>
+            <response code="200">Success</response>
+            <response code="404">User not found</response>
+        </member>
+        <member name="M:CarRental.Controllers.CarsController.RentCar(System.DateTime,System.String)">
+            <summary>
+            Rents a car.
+            </summary>
+            <response code="200">Success</response>
+            <response code="404">Rent dates are not valid</response>
+        </member>
+        <member name="M:CarRental.Controllers.CarsController.Get">
+            <summary>
+            Gets all cars.
+            </summary>
+        </member>
+        <member name="M:CarRental.Controllers.UsersController.Post(CarRental.POCO.User)">
+            <summary>
+            Adds a new user.
+            </summary>
+            <response code="200">Success</response>
+        </member>
+    </members>
+</doc>

@@ -10,6 +10,7 @@ using CarRental.ForeignAPI;
 using CarRental.API;
 using Newtonsoft.Json.Linq;
 using CarRental.Email;
+using Microsoft.AspNetCore.Http;
 
 namespace CarRental.Controllers
 {
@@ -19,13 +20,24 @@ namespace CarRental.Controllers
     {
         private readonly ILogger<CarsController> _logger;
         private DbUtils dbUtils;
+        public class Dates
+        {
+            public DateTime from { get; set; }
+            public DateTime to { get; set; }
+        }
+
         public CarsController(ILogger<CarsController> logger, DatabaseContext context)
         {
             _logger = logger;
             dbUtils = new DbUtils(context);
         }
 
+        /// <summary>
+        /// Adds a new car.
+        /// </summary>
         [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(503)]
         public ActionResult Post([FromBody] Car NewCar)
         {
             if (dbUtils.AddCar(NewCar)) return StatusCode(200);
@@ -33,8 +45,16 @@ namespace CarRental.Controllers
             return StatusCode(503);
         }
 
+        /// <summary>
+        /// Checks price of rental.
+        /// </summary>
+        /// <response code="200">Success</response>
+        /// <response code="404">User not found</response>
         [HttpPost("GetPrice/{user_id}/{car_id}")]
-        public IActionResult GetPrice([FromBody] Dictionary<string, DateTime> dates, string user_id, string car_id)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public IActionResult GetPrice([FromBody] Dates dates, [FromRoute]string user_id, [FromRoute]string car_id)
         {
             User user = dbUtils.FindUserByAuthID(user_id);
             if (user == null) return StatusCode(404);
@@ -42,7 +62,7 @@ namespace CarRental.Controllers
             Guid carId = Guid.Parse(car_id);
             Car car = dbUtils.FindCar(carId);
 
-            TimeSpan rentDuration = dates["to"] - dates["from"];
+            TimeSpan rentDuration = dates.to - dates.from;
 
             if (car == null)
             {
@@ -73,7 +93,15 @@ namespace CarRental.Controllers
             }
         }
 
+        /// <summary>
+        /// Rents a car.
+        /// </summary>
+        /// <response code="200">Success</response>
+        /// <response code="404">Rent dates are not valid</response>
         [HttpPost("Rent/{quotaId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public IActionResult RentCar([FromBody] DateTime startDate, string quotaId)
         {
             Guid Id = Guid.Parse(quotaId);
@@ -126,7 +154,11 @@ namespace CarRental.Controllers
             }
         }
 
+        /// <summary>
+        /// Gets all cars.
+        /// </summary>
         [HttpGet]
+        [ProducesResponseType(200)]
         public IEnumerable<Car> Get()
         {
             return dbUtils.GetCars().ToArray();
