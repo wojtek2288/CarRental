@@ -11,6 +11,7 @@ using CarRental.API;
 using Newtonsoft.Json.Linq;
 using CarRental.Email;
 using Microsoft.AspNetCore.Http;
+using CarRental.AzureFiles;
 
 namespace CarRental.Controllers
 {

@@ -17,7 +17,7 @@ export default class App extends Component {
         return (
             <Switch>
                 <Route exact path='/' component={Home} />
-                <Route path='/signup' component={SignUp}  />
+                <Route path='/signup' component={SignUp} />
                 <ProtectedRoute path='/addcar' component={AddCar} role='Admin' />
                 <ProtectedRoute path='/exampleadmin' component={ExampleAdmin} role='Admin' />
                 <ProtectedRoute path='/exampleuser' component={ExampleUser} role='User' text='This is example prop' />
