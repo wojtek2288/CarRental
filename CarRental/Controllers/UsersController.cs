@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CarRental.Data;
 using CarRental.POCO;
 using Microsoft.AspNetCore.Http;
+using CarRental.Services;
 
 namespace CarRental.Controllers
 {
@@ -14,12 +15,12 @@ namespace CarRental.Controllers
     [Route("[controller]")]
     public class UsersController : ControllerBase
     {
-        private DbUtils dbUtils;
         private readonly ILogger<UsersController> _logger;
+        private UsersService usersService;
         public UsersController(ILogger<UsersController> logger, DatabaseContext context)
         {
             _logger = logger;
-            dbUtils = new DbUtils(context);
+            usersService = new UsersService(context, this);
         }
 
         /// <summary>
@@ -31,10 +32,7 @@ namespace CarRental.Controllers
         [ProducesResponseType(503)]
         public ActionResult Post([FromBody] User NewUser)
         {
-            NewUser.Role = POCO.User.UserRole.CLIENT;
-            if (dbUtils.AddUser(NewUser)) return StatusCode(200);
-
-            return StatusCode(503);
+            return usersService.Post(NewUser);
         }
     }
 }
