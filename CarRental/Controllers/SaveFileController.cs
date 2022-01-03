@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CarRental.AzureFiles;
 using System.IO;
+using CarRental.Services;
 
 namespace CarRental.Controllers
 {
@@ -14,12 +15,13 @@ namespace CarRental.Controllers
     [Route("[controller]")]
     public class SaveFileController : Controller
     {
-        private DbUtils dbUtils;
         private readonly ILogger<UsersController> _logger;
-        public SaveFileController(ILogger<UsersController> logger, DatabaseContext context)
+        private SaveFileService saveFileService;
+
+        public SaveFileController(ILogger<UsersController> logger)
         {
             _logger = logger;
-            dbUtils = new DbUtils(context);
+            saveFileService = new SaveFileService(this);
         }
 
         /// <summary>
@@ -33,34 +35,7 @@ namespace CarRental.Controllers
         [ProducesResponseType(500)]
         public ActionResult Post()
         {
-            List<string> extensions = new List<string>() { ".jpg, .png, .jpeg" };
-            int twoMB = 2 * 1024 * 1024;
-            try
-            {
-                var file = Request.Form.Files[0];
-
-                if (!extensions.Contains(Path.GetExtension(file.FileName)))
-                {
-                    return BadRequest("Not supported extension");
-                }
-                else if (file.Length < twoMB)
-                {
-                    return BadRequest("File too big");
-                }
-                else if(file.Length <= 0)
-                {
-                    return BadRequest();
-                }
-                else
-                {
-                    string fname = AzureFilesPushPull.UploadFile(file.FileName, file.OpenReadStream());
-                    return Ok(fname);
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex}");
-            }
+            return saveFileService.Post();
         }
     }
 }
