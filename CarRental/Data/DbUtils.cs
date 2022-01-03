@@ -68,6 +68,19 @@ namespace CarRental.Data
             return (POCO.Rental)found;
         }
 
+        public bool VerifyRental(POCO.Rental rental)
+        {
+            var overlappingRentals =
+                from r in context.Rentals
+                where rental.From <= r.To && rental.To >= r.From && rental.CarId == r.CarId
+                select r;
+
+            if (overlappingRentals.Any() || rental.From < DateTime.Now || rental.From > rental.To)
+                return false;
+            else
+                return true;
+        }
+
         public IEnumerable<POCO.Car> GetCars()
         {
             foreach (Models.Car car in context.Cars)

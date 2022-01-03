@@ -11,6 +11,8 @@ const RentModal = (props) => {
     const [checkingPrice, setCheckingPrice] = useState(true);
     const [renting, setRenting] = useState(false);
     const [text, setText] = useState('Check price');
+    const [alertType, setAlertType] = useState('')
+    const [alertText, setAlertText] = useState('');
     const [quotaId, setquotaId] = useState('');
     const [displayAlert, setDisplayAlert] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -28,6 +30,7 @@ const RentModal = (props) => {
         setDisplayAlert(false);
         setLoading(false);
         setHideButton(false);
+        setAlertType('');
         props.closeModal();
     }
 
@@ -71,11 +74,23 @@ const RentModal = (props) => {
             console.log(res);
             setDisplayAlert(true);
             setTimeout(close, 3000);
+            setAlertType('success');
+            setAlertText('Successfully Rented Car');
             setLoading(false);
             setHideButton(true);
         }
         catch (err) {
             console.log(err);
+            if (err.response.status === 400) {
+                setCheckingPrice(true);
+                setRenting(false);
+                setquotaId('');
+                setText('Check price');
+                setDisplayAlert(true);
+                setAlertText('Car is unavaliable at the selected dates');
+                setAlertType('danger');
+                setLoading(false);
+            }
         }
     }
 
@@ -97,7 +112,7 @@ const RentModal = (props) => {
                 }}
                 transparent
             >
-                {displayAlert ? <Alert>Successfully Rented Car</Alert> : null}
+                {displayAlert ? <Alert color={alertType}>{alertText}</Alert> : null}
                 <Button className="closeBtn" onClick={close} close />
                 <h1 className='form-input' className='margin-bottom'>Rent {props.choosenCar.brand} {props.choosenCar.model}</h1>
                 <Form onSubmit={(e) => {
