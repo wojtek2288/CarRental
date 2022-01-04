@@ -169,9 +169,9 @@ namespace CarRental.Data
             this.context = context;
         }
 
-        public DbUtils()
+        public DbUtils(string appsettingsPath)
         {
-            string appsettingsContent = File.ReadAllText("appsettings.json");
+            string appsettingsContent = File.ReadAllText(appsettingsPath);
             dynamic settings = JsonConvert.DeserializeObject(appsettingsContent);
 
             string connectionString = settings.ConnectionStrings.DefaultConnection;
