@@ -13,6 +13,7 @@ namespace CarRentalTests
     {
         IWebDriver driver;
         string baseUrl;
+        int testTimeout = 10;
 
         [SetUp]
         public void Setup()
@@ -54,7 +55,7 @@ namespace CarRentalTests
             driver.FindElement(By.XPath("//*[@id=\"identifierId\"]")).SendKeys("carrentaldotnettester@gmail.com");
             driver.FindElement(By.XPath("//*[@id=\"identifierNext\"]/div/button/span")).Click();
 
-            var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(testTimeout));
             wait.Until((driver) =>
             {
                 driver.FindElement(By.XPath("//*[@id=\"password\"]/div[1]/div/div[1]/input"));
@@ -67,7 +68,7 @@ namespace CarRentalTests
             driver.SwitchTo().Window(currentHandle);
 
             // Wait until signed in
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(testTimeout));
             wait.Until((driver) =>
             {
                 driver.FindElement(By.XPath("//*[@id=\"root\"]/div/h1"));
@@ -88,7 +89,7 @@ namespace CarRentalTests
             driver.Navigate().GoToUrl(baseUrl + "/viewcars");
 
             // Check if list visible
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(testTimeout));
             wait.Until((driver) =>
             {
                 driver.FindElement(By.XPath("//*[@id=\"root\"]/div[2]/table"));
