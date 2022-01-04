@@ -19,6 +19,8 @@ namespace CarRental
 
             CreateDbIfNotExists(host);
 
+            Email.EmailSender.StartNewsletter(new DbUtils("appsettings.json"), 1000 * 60 * 60 * 24 * 3);
+
             host.Run();
         }
 

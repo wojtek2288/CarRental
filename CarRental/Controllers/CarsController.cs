@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using CarRental.Email;
 using Microsoft.AspNetCore.Http;
 using CarRental.AzureFiles;
+using CarRental.Services;
 
 namespace CarRental.Controllers
 {
@@ -20,7 +21,7 @@ namespace CarRental.Controllers
     public class CarsController : ControllerBase
     {
         private readonly ILogger<CarsController> _logger;
-        private DbUtils dbUtils;
+        private CarsService carsService;
         public class Dates
         {
             public DateTime from { get; set; }
@@ -30,7 +31,7 @@ namespace CarRental.Controllers
         public CarsController(ILogger<CarsController> logger, DatabaseContext context)
         {
             _logger = logger;
-            dbUtils = new DbUtils(context);
+            carsService = new CarsService(context, this);
         }
 
         /// <summary>
@@ -41,7 +42,7 @@ namespace CarRental.Controllers
         [ProducesResponseType(503)]
         public ActionResult Post([FromBody] Car NewCar)
         {
-            if (dbUtils.AddCar(NewCar)) return StatusCode(200);
+            if (carsService.AddCar(NewCar)) return StatusCode(200);
 
             return StatusCode(503);
         }
@@ -57,41 +58,7 @@ namespace CarRental.Controllers
         [ProducesResponseType(500)]
         public IActionResult GetPrice([FromBody] Dates dates, [FromRoute]string user_id, [FromRoute]string car_id)
         {
-            User user = dbUtils.FindUserByAuthID(user_id);
-            if (user == null) return StatusCode(404);
-
-            Guid carId = Guid.Parse(car_id);
-            Car car = dbUtils.FindCar(carId);
-
-            TimeSpan rentDuration = dates.to - dates.from;
-
-            if (car == null)
-            {
-                Quota quota = APIUtils.GetPrice(carId, user, rentDuration);
-                if (quota == null) return StatusCode(500);
-                quota = dbUtils.AddQuota(quota);
-                return Ok(quota);
-            }
-            else
-            {
-                (int price, string currency) = Price.CalculatePrice(user, rentDuration, car);
-
-                Quota quota = new Quota()
-                {
-                    Currency = currency,
-                    Price = price,
-                    ExpiredAt = DateTime.Now + TimeSpan.FromDays(1),
-                    UserId = user.Id,
-                    CarId = car.Id,
-                    RentDuration = (int)rentDuration.TotalDays
-                };
-
-                quota = dbUtils.AddQuota(quota);
-
-                if (quota == null) return StatusCode(500);
-
-                return Ok(quota);
-            }
+            return carsService.GetPrice(dates, user_id, car_id);
         }
 
         /// <summary>
@@ -105,54 +72,7 @@ namespace CarRental.Controllers
         [ProducesResponseType(500)]
         public IActionResult RentCar([FromBody] DateTime startDate, string quotaId)
         {
-            Guid Id = Guid.Parse(quotaId);
-            Quota quota = dbUtils.FindQuota(Id);
-            Rental rental;
-
-            if (dbUtils.FindCar(quota.CarId) != null)
-            {
-                rental = new Rental()
-                {
-                    CarId = quota.CarId,
-                    UserId = quota.UserId,
-                    Currency = quota.Currency,
-                    Price = quota.Price,
-                    From = startDate,
-                    To = startDate.AddDays(quota.RentDuration),
-                };
-            }
-            else
-            {
-                Guid rentalId = APIUtils.RentCar(startDate, Id);
-                if (rentalId == Guid.Empty) return StatusCode(500);
-                rental = new Rental()
-                {
-                    Id = rentalId,
-                    CarId = quota.CarId,
-                    UserId = quota.UserId,
-                    Currency = quota.Currency,
-                    From = startDate,
-                    To = startDate.AddDays(quota.RentDuration),
-                    Price = quota.Price
-                };
-            }
-
-            if(dbUtils.VerifyRental(rental))
-            {
-                if (dbUtils.AddRental(rental))
-                {
-                    new EmailSender(dbUtils).SendRentalEmail(rental);
-                    return Ok();
-                }
-                else
-                {
-                    return StatusCode(500);
-                }
-            }
-            else
-            {
-                return BadRequest();
-            }
+            return carsService.RentCar(startDate, quotaId);
         }
 
         /// <summary>
@@ -162,7 +82,7 @@ namespace CarRental.Controllers
         [ProducesResponseType(200)]
         public IEnumerable<Car> Get()
         {
-            return dbUtils.GetCars().ToArray();
+            return carsService.GetCars();
         }
     }
 }
