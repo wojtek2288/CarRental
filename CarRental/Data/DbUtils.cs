@@ -5,6 +5,9 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using CarRental.ForeignAPI;
 using System.Linq;
+using Newtonsoft.Json;
+using System.IO;
+using Microsoft.EntityFrameworkCore;
 
 namespace CarRental.Data
 {
@@ -164,6 +167,31 @@ namespace CarRental.Data
         public DbUtils(DatabaseContext context)
         {
             this.context = context;
+        }
+
+        public DbUtils()
+        {
+            string appsettingsContent = File.ReadAllText("appsettings.json");
+            dynamic settings = JsonConvert.DeserializeObject(appsettingsContent);
+
+            string connectionString = settings.ConnectionStrings.DefaultConnection;
+
+            var contextOptions = new DbContextOptionsBuilder<DatabaseContext>()
+                .UseSqlServer(connectionString)
+                .Options;
+            context = new DatabaseContext(contextOptions);
+        }
+
+        public IEnumerable<POCO.Car> GetNewCars()
+        {
+            return from car in context.Cars
+                   where car.TimeAdded < DateTime.Now.AddDays(-3)
+                   select (POCO.Car)car;
+        }
+
+        public void Dispose()
+        {
+            context.Dispose();
         }
     }
 }
