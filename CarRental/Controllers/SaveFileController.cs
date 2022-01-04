@@ -16,12 +16,12 @@ namespace CarRental.Controllers
     public class SaveFileController : Controller
     {
         private readonly ILogger<UsersController> _logger;
-        private SaveFileService saveFileService;
+        private ISaveFileService _saveFileService;
 
-        public SaveFileController(ILogger<UsersController> logger)
+        public SaveFileController(ILogger<UsersController> logger, ISaveFileService saveFileService)
         {
             _logger = logger;
-            saveFileService = new SaveFileService(this);
+            _saveFileService = saveFileService;
         }
 
         /// <summary>
@@ -35,7 +35,8 @@ namespace CarRental.Controllers
         [ProducesResponseType(500)]
         public ActionResult Post()
         {
-            return saveFileService.Post();
+            string fname = _saveFileService.Post(HttpContext);
+            return Ok(fname);
         }
     }
 }

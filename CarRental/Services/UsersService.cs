@@ -2,26 +2,30 @@
 using CarRental.Data;
 using CarRental.POCO;
 using Microsoft.AspNetCore.Mvc;
+using CarRental.Exceptions;
 
 namespace CarRental.Services
 {
-    public class UsersService
+    public interface IUsersService
+    {
+        void Post(User NewUser);
+    }
+
+    public class UsersService : IUsersService
     {
         private DbUtils dbUtils;
-        private UsersController usersController;
 
-        public UsersService(DatabaseContext context, UsersController usersController)
+        public UsersService(DatabaseContext context)
         {
             dbUtils = new DbUtils(context);
-            this.usersController = usersController;
         }
 
-        public ActionResult Post(User NewUser)
+        public void Post(User NewUser)
         {
             NewUser.Role = User.UserRole.CLIENT;
-            if (dbUtils.AddUser(NewUser)) return usersController.StatusCode(200);
+            if (dbUtils.AddUser(NewUser)) return;
 
-            return usersController.StatusCode(503);
+            throw new InternalServerErrorException("Internal server error");
         }
     }
 }

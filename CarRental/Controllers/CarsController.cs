@@ -21,17 +21,17 @@ namespace CarRental.Controllers
     public class CarsController : ControllerBase
     {
         private readonly ILogger<CarsController> _logger;
-        private CarsService carsService;
+        private ICarsService _carsService;
         public class Dates
         {
             public DateTime from { get; set; }
             public DateTime to { get; set; }
         }
 
-        public CarsController(ILogger<CarsController> logger, DatabaseContext context)
+        public CarsController(ILogger<CarsController> logger, ICarsService carService)
         {
             _logger = logger;
-            carsService = new CarsService(context, this);
+            _carsService = carService;
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace CarRental.Controllers
         [ProducesResponseType(503)]
         public ActionResult Post([FromBody] Car NewCar)
         {
-            if (carsService.AddCar(NewCar)) return StatusCode(200);
+            if (_carsService.AddCar(NewCar)) return StatusCode(200);
 
             return StatusCode(503);
         }
@@ -58,7 +58,8 @@ namespace CarRental.Controllers
         [ProducesResponseType(500)]
         public IActionResult GetPrice([FromBody] Dates dates, [FromRoute]string user_id, [FromRoute]string car_id)
         {
-            return carsService.GetPrice(dates, user_id, car_id);
+            Quota quota = _carsService.GetPrice(dates, user_id, car_id);
+            return Ok(quota);
         }
 
         /// <summary>
@@ -72,7 +73,8 @@ namespace CarRental.Controllers
         [ProducesResponseType(500)]
         public IActionResult RentCar([FromBody] DateTime startDate, string quotaId)
         {
-            return carsService.RentCar(startDate, quotaId);
+            _carsService.RentCar(startDate, quotaId);
+            return Ok();
         }
 
         /// <summary>
@@ -82,7 +84,7 @@ namespace CarRental.Controllers
         [ProducesResponseType(200)]
         public IEnumerable<Car> Get()
         {
-            return carsService.GetCars();
+            return _carsService.GetCars();
         }
     }
 }

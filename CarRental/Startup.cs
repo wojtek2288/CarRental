@@ -10,6 +10,8 @@ using Microsoft.Extensions.Hosting;
 using System.IO;
 using System;
 using System.Reflection;
+using CarRental.Services;
+using CarRental.Middleware;
 
 namespace CarRental
 {
@@ -26,6 +28,11 @@ namespace CarRental
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ICarsService, CarsService>();
+            services.AddScoped<ISaveFileService, SaveFileService>();
+            services.AddScoped<IUsersService, UsersService>();
+            services.AddScoped<ErrorHandlingMiddleware>();
 
             services.AddControllersWithViews();
 
@@ -68,19 +75,20 @@ namespace CarRental
                 app.UseHsts();
             }
 
+            app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseHttpsRedirection();
-
-            app.UseSwagger();
-
-            app.UseSwaggerUI(c => {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Car Rental API");
-            });
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
-
             app.UseRouting();
             app.UseAuthentication();
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Car Rental API");
+            });
 
             app.UseEndpoints(endpoints =>
             {
