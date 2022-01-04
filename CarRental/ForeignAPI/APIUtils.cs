@@ -130,5 +130,16 @@ namespace CarRental.ForeignAPI
 
             return body.rentId;
         }
+
+        public static bool ReturnCar(Guid rentId)
+        {
+            RestClient client = new RestClient("https://mini.rentcar.api.snet.com.pl/vehicle/Return/" + rentId);
+            RestRequest request = new RestRequest(Method.POST);
+            request.AddHeader("Authorization", AuthorisationString);
+            
+            var response = client.Execute(request);
+
+            return response.IsSuccessful;
+        }
     }
 }
