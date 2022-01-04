@@ -3,11 +3,17 @@ using CarRental.POCO;
 using RestSharp;
 using RestSharp.Authenticators;
 using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Timers;
 
 namespace CarRental.Email
 {
     public class EmailSender
     {
+        private static EmailSender newsletterSender;
+        private static Timer newsletterTimer;
+
         DbUtils dbUtils;
         public EmailSender(DbUtils dbUtils)
         {
@@ -35,7 +41,7 @@ namespace CarRental.Email
 
         public void SendToAll(string from, string subject, string text)
         {
-            foreach(User user in dbUtils.GetUsers())
+            foreach (User user in dbUtils.GetUsers())
             {
                 SendEmail(user.Email, from, subject, text);
             }
@@ -52,6 +58,42 @@ namespace CarRental.Email
                 $"{car.Description}\n" +
                 $"Have a nice day!"
                 );
+        }
+
+        public void SendNewsletter()
+        {
+            var cars = new List<Car>(dbUtils.GetNewCars());
+            if (cars.Count == 0) return;
+            StringBuilder sb = new("Here are out newly added cars!\n\n");
+
+            foreach(Car car in cars)
+            {
+                sb.Append($"{car.Brand} {car.Model}\n");
+                sb.Append($"{car.Description}\n\n");
+            }
+
+            SendToAll("newsletter@carrentalservice.com", $"We've got {cars.Count} new cars!", sb.ToString());
+        }
+
+        public static void StartNewsletter(DbUtils dbUtils, double interval)
+        {
+            newsletterSender = new EmailSender(dbUtils);
+            newsletterTimer = new Timer(interval);
+            newsletterTimer.Elapsed += (s, e) =>
+           {
+               newsletterSender.SendNewsletter();
+           };
+
+            newsletterTimer.AutoReset = true;
+            newsletterTimer.Enabled = true;
+        }
+
+        public static void StopNewsletter()
+        {
+            newsletterTimer.Enabled = false;
+            newsletterTimer = null;
+            newsletterSender.dbUtils.Dispose();
+            newsletterSender = null;
         }
     }
 }

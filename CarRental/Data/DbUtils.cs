@@ -185,7 +185,7 @@ namespace CarRental.Data
         public IEnumerable<POCO.Car> GetNewCars()
         {
             return from car in context.Cars
-                   where car.TimeAdded < DateTime.Now.AddDays(-3)
+                   where car.TimeAdded > DateTime.Now.AddDays(-3)
                    select (POCO.Car)car;
         }
 
