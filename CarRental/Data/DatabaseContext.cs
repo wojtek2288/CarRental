@@ -9,10 +9,10 @@ namespace CarRental.Data
         {
         }
 
-        public DbSet<Models.User> Users { get; set; }
-        public DbSet<Models.Car> Cars { get; set; }
-        public DbSet<Models.Rental> Rentals { get; set; }
-        public DbSet<Models.Quota> Quotas { get; set; }
+        public virtual DbSet<Models.User> Users { get; set; }
+        public virtual DbSet<Models.Car> Cars { get; set; }
+        public virtual DbSet<Models.Rental> Rentals { get; set; }
+        public virtual DbSet<Models.Quota> Quotas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
