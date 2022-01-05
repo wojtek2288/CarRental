@@ -2,6 +2,7 @@
 using CarRental.Controllers;
 using CarRental.Data;
 using CarRental.Email;
+using CarRental.Exceptions;
 using CarRental.ForeignAPI;
 using CarRental.POCO;
 using Microsoft.AspNetCore.Mvc;
@@ -11,15 +12,21 @@ using System.Linq;
 
 namespace CarRental.Services
 {
-    public class CarsService
+    public interface ICarsService
+    {
+        bool AddCar(Car car);
+        IEnumerable<Car> GetCars();
+        Quota GetPrice(CarsController.Dates dates, string user_id, string car_id);
+        void RentCar(DateTime startDate, string quotaId);
+    }
+
+    public class CarsService : ICarsService
     {
         private DbUtils dbUtils;
-        private CarsController carsController;
 
-        public CarsService(DatabaseContext context, CarsController carsController)
+        public CarsService(DatabaseContext context)
         {
             dbUtils = new DbUtils(context);
-            this.carsController = carsController;
         }
 
         public bool AddCar(Car car)
@@ -27,10 +34,10 @@ namespace CarRental.Services
             return dbUtils.AddCar(car);
         }
 
-        public ActionResult GetPrice(CarsController.Dates dates, string user_id, string car_id)
+        public Quota GetPrice(CarsController.Dates dates, string user_id, string car_id)
         {
             User user = dbUtils.FindUserByAuthID(user_id);
-            if (user == null) return carsController.StatusCode(404);
+            if (user == null) throw new NotFoundException("User not found");
 
             Guid carId = Guid.Parse(car_id);
             Car car = dbUtils.FindCar(carId);
@@ -40,9 +47,9 @@ namespace CarRental.Services
             if (car == null)
             {
                 Quota quota = APIUtils.GetPrice(carId, user, rentDuration);
-                if (quota == null) return carsController.StatusCode(500);
+                if (quota == null) throw new InternalServerErrorException("Internal Server error");
                 quota = dbUtils.AddQuota(quota);
-                return carsController.Ok(quota);
+                return quota;
             }
             else
             {
@@ -60,13 +67,13 @@ namespace CarRental.Services
 
                 quota = dbUtils.AddQuota(quota);
 
-                if (quota == null) return carsController.StatusCode(500);
+                if (quota == null) throw new InternalServerErrorException("Internal Server error");
 
-                return carsController.Ok(quota);
+                return quota;
             }
         }
 
-        public IActionResult RentCar(DateTime startDate, string quotaId)
+        public void RentCar(DateTime startDate, string quotaId)
         {
             Guid Id = Guid.Parse(quotaId);
             Quota quota = dbUtils.FindQuota(Id);
@@ -87,7 +94,7 @@ namespace CarRental.Services
             else
             {
                 Guid rentalId = APIUtils.RentCar(startDate, Id);
-                if (rentalId == Guid.Empty) return carsController.StatusCode(500);
+                if (rentalId == Guid.Empty) throw new InternalServerErrorException("Internal Server error");
                 rental = new Rental()
                 {
                     Id = rentalId,
@@ -105,16 +112,16 @@ namespace CarRental.Services
                 if (dbUtils.AddRental(rental))
                 {
                     new EmailSender(dbUtils).SendRentalEmail(rental);
-                    return carsController.Ok();
+                    return;
                 }
                 else
                 {
-                    return carsController.StatusCode(500);
+                    throw new InternalServerErrorException("Internal Server error");
                 }
             }
             else
             {
-                return carsController.BadRequest();
+                throw new BadRequestException("Rental is not possible");
             }
         }
 

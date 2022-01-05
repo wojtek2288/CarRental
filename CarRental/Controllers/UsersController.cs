@@ -16,11 +16,11 @@ namespace CarRental.Controllers
     public class UsersController : ControllerBase
     {
         private readonly ILogger<UsersController> _logger;
-        private UsersService usersService;
-        public UsersController(ILogger<UsersController> logger, DatabaseContext context)
+        private IUsersService _usersService;
+        public UsersController(ILogger<UsersController> logger, IUsersService userService)
         {
             _logger = logger;
-            usersService = new UsersService(context, this);
+            _usersService = userService;
         }
 
         /// <summary>
@@ -32,7 +32,8 @@ namespace CarRental.Controllers
         [ProducesResponseType(503)]
         public ActionResult Post([FromBody] User NewUser)
         {
-            return usersService.Post(NewUser);
+            _usersService.Post(NewUser);
+            return Ok();
         }
     }
 }

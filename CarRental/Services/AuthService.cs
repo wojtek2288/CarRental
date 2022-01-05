@@ -1,15 +1,20 @@
 ﻿using CarRental.Data;
-using CarRental.Data;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RestSharp;
 using System;
 using Microsoft.AspNetCore.Http;
 using CarRental.Controllers;
+using CarRental.Exceptions;
 
 namespace CarRental.Services
 {
-    public class AuthService
+    public interface IAuthService
+    {
+        Task<string> Authorize(string AuthID, string TokenID);
+    }
+
+    public class AuthService : IAuthService
     {
         private class GoogleResponse
         {
@@ -24,15 +29,13 @@ namespace CarRental.Services
         }
 
         private DbUtils dbUtils;
-        private AuthController authController;
 
-        public AuthService(DatabaseContext context, AuthController authController)
+        public AuthService(DatabaseContext context)
         {
             dbUtils = new DbUtils(context);
-            this.authController = authController;
         }
 
-        public async Task<IActionResult> Authorize(string AuthID, string TokenID)
+        public async Task<string> Authorize(string AuthID, string TokenID)
         {
             POCO.User user;
 
@@ -47,20 +50,19 @@ namespace CarRental.Services
             DateTime time = DateTime.Now;
             long unixTime = ((DateTimeOffset)time).ToUnixTimeSeconds();
             if (unixTime > response.exp)
-                return authController.StatusCode(401);
+                throw new UnauthorizedException("Token expired");
+
             else if (response.error != null)
-                return authController.StatusCode(500);
+                throw new InternalServerErrorException("Internal server error");
 
             user = dbUtils.FindUserByAuthID(AuthID.ToString());
-            if (user == null) return authController.StatusCode(200, "NotRegistered");
+            if (user == null) return "NotRegistered";
 
             //Zwrocenie roli
-            if (user.Role == POCO.User.UserRole.CLIENT)
-                return authController.StatusCode(200, "User");
-            else if (user.Role == POCO.User.UserRole.ADMINISTRATOR)
-                return authController.StatusCode(200, "Admin");
-
-            return authController.StatusCode(200, response);
+            if (user.Role == POCO.User.UserRole.ADMINISTRATOR)
+                return "Admin";
+            else
+                return "User";
         }
     }
 }

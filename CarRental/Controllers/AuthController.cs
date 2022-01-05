@@ -10,13 +10,13 @@ namespace CarRental.Controllers
     [Route("[controller]")]
     public class AuthController : ControllerBase
     {
-        private AuthService authService;
+        private IAuthService _authService;
         private readonly ILogger<CarsController> _logger;
         
-        public AuthController(ILogger<CarsController> logger, DatabaseContext context)
+        public AuthController(ILogger<CarsController> logger, IAuthService authService)
         {
             _logger = logger;
-            authService = new AuthService(context, this);
+            _authService = authService;
         }
 
         /// <summary>
@@ -32,7 +32,8 @@ namespace CarRental.Controllers
         [ProducesResponseType(500)]
         public async Task<IActionResult> Get([FromHeader]string AuthID, [FromHeader]string TokenID)
         {
-            return await authService.Authorize(AuthID, TokenID);
+            string role = await _authService.Authorize(AuthID, TokenID);
+            return Ok(role);
         }
     }
 }
