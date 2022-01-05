@@ -16,22 +16,22 @@ namespace CarRental.Middleware
             {
                 await next.Invoke(context);
             }
-            catch(UnauthorizedException unauthorizedException)
+            catch (UnauthorizedException unauthorizedException)
             {
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsync(unauthorizedException.Message);
             }
-            catch(NotFoundException notFoundException)
+            catch (NotFoundException notFoundException)
             {
                 context.Response.StatusCode = 404;
                 await context.Response.WriteAsync(notFoundException.Message);
             }
-            catch(InternalServerErrorException internalServerErrorException)
+            catch (InternalServerErrorException internalServerErrorException)
             {
                 context.Response.StatusCode = 500;
                 await context.Response.WriteAsync(internalServerErrorException.Message);
             }
-            catch(BadRequestException badRequestException)
+            catch (BadRequestException badRequestException)
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(badRequestException.Message);
