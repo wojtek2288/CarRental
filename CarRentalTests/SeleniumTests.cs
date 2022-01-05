@@ -58,7 +58,14 @@ namespace CarRentalTests
             var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(testTimeout));
             wait.Until((driver) =>
             {
-                driver.FindElement(By.XPath("//*[@id=\"password\"]/div[1]/div/div[1]/input"));
+                try
+                {
+                    driver.FindElement(By.XPath("//*[@id=\"password\"]/div[1]/div/div[1]/input")).Click();
+                }
+                catch (ElementNotInteractableException)
+                {
+                    return false;
+                }
                 return true;
             });
 
