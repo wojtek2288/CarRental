@@ -21,15 +21,20 @@ namespace CarRentalTests
 
         private int changes = 0;
 
+        public IQueryable<CarRental.Models.User> userData;
+        public IQueryable<CarRental.Models.Car> carData;
+        public IQueryable<CarRental.Models.Quota> quotaData;
+        public IQueryable<CarRental.Models.Rental> rentalData;
+
         public DbMock()
         {
-            var userData = new List<CarRental.Models.User>() {
+            userData = new List<CarRental.Models.User>() {
                     new CarRental.Models.User
                     {
                         Id = Guid.Parse("bbc591e4-eb41-4f8d-a030-1e892393224a"),
                         AuthID = "googleid2",
-                        DateOfBirth = System.DateTime.Today,
-                        DriversLicenseDate = System.DateTime.MinValue,
+                        DateOfBirth = new DateTime(2000, 7, 10),
+                        DriversLicenseDate = new DateTime(2018, 10, 1),
                         Email = "user2@website.com",
                         Location = "Warsaw",
                         Role = CarRental.Models.User.UserRole.ADMINISTRATOR
@@ -38,8 +43,8 @@ namespace CarRentalTests
                     {
                         Id = Guid.Parse("c72d2e73-93b6-4ddb-bf6e-c778dd425e6b"),
                         AuthID = "googleid",
-                        DateOfBirth = System.DateTime.Today,
-                        DriversLicenseDate = System.DateTime.MinValue,
+                        DateOfBirth = new DateTime(1990, 7, 10),
+                        DriversLicenseDate = new DateTime(2010, 10, 1),
                         Email = "user@website.com",
                         Location = "Warsaw",
                         Role = CarRental.Models.User.UserRole.CLIENT
@@ -52,8 +57,14 @@ namespace CarRentalTests
             mockUsers.As<IQueryable<CarRental.Models.User>>().Setup(m => m.Expression).Returns(userData.Expression);
             mockUsers.As<IQueryable<CarRental.Models.User>>().Setup(m => m.ElementType).Returns(userData.ElementType);
             mockUsers.As<IQueryable<CarRental.Models.User>>().Setup(m => m.GetEnumerator()).Returns(userData.GetEnumerator());
+            mockUsers.Setup(m => m.Find(It.IsAny<object[]>())).Returns((object[] arg) =>
+            {
+                return (from u in userData
+                        where u.Id == (Guid)arg[0]
+                        select u).FirstOrDefault();
+            });
 
-            var carData = new List<CarRental.Models.Car>() {
+            carData = new List<CarRental.Models.Car>() {
                     new CarRental.Models.Car
                     {
                         Id = Guid.Parse("de8725ba-e24d-4bea-b3eb-61f459c4b0c3"),
@@ -72,8 +83,14 @@ namespace CarRentalTests
             mockCars.As<IQueryable<CarRental.Models.Car>>().Setup(m => m.Expression).Returns(carData.Expression);
             mockCars.As<IQueryable<CarRental.Models.Car>>().Setup(m => m.ElementType).Returns(carData.ElementType);
             mockCars.As<IQueryable<CarRental.Models.Car>>().Setup(m => m.GetEnumerator()).Returns(carData.GetEnumerator());
+            mockCars.Setup(m => m.Find(It.IsAny<object[]>())).Returns((object[] arg) =>
+                        {
+                            return (from u in carData 
+                                    where u.Id == (Guid)arg[0]
+                                    select u).FirstOrDefault();
+                        });
 
-            var rentalData = new List<CarRental.Models.Rental>()
+            rentalData = new List<CarRental.Models.Rental>()
             {
             }.AsQueryable();
             mockRentals = new Mock<DbSet<CarRental.Models.Rental>>();
@@ -83,9 +100,26 @@ namespace CarRentalTests
             mockRentals.As<IQueryable<CarRental.Models.Rental>>().Setup(m => m.Expression).Returns(rentalData.Expression);
             mockRentals.As<IQueryable<CarRental.Models.Rental>>().Setup(m => m.ElementType).Returns(rentalData.ElementType);
             mockRentals.As<IQueryable<CarRental.Models.Rental>>().Setup(m => m.GetEnumerator()).Returns(rentalData.GetEnumerator());
-
-            var quotaData = new List<CarRental.Models.Quota>()
+            mockRentals.Setup(m => m.Find(It.IsAny<object[]>())).Returns((object[] arg) =>
             {
+                return (from u in rentalData
+                        where u.Id == (Guid)arg[0]
+                        select u).FirstOrDefault();
+            });
+
+
+            quotaData = new List<CarRental.Models.Quota>()
+            {
+                new CarRental.Models.Quota
+                {
+                    Id = Guid.Parse("BB47ABE4-2632-49A6-9855-680F01F44138"),
+                    CarId = carData.FirstOrDefault().Id,
+                    UserId = userData.FirstOrDefault().Id,
+                    Currency = "PLN",
+                    Price = 1000,
+                    ExpiredAt = DateTime.Today.AddDays(2),
+                    RentDuration = 10
+                }
             }.AsQueryable();
             mockQuotas = new Mock<DbSet<CarRental.Models.Quota>>();
             mockQuotas.Setup(m => m.Add(It.IsAny<CarRental.Models.Quota>()))
@@ -94,6 +128,12 @@ namespace CarRentalTests
             mockQuotas.As<IQueryable<CarRental.Models.Quota>>().Setup(m => m.Expression).Returns(quotaData.Expression);
             mockQuotas.As<IQueryable<CarRental.Models.Quota>>().Setup(m => m.ElementType).Returns(quotaData.ElementType);
             mockQuotas.As<IQueryable<CarRental.Models.Quota>>().Setup(m => m.GetEnumerator()).Returns(quotaData.GetEnumerator());
+            mockQuotas.Setup(m => m.Find(It.IsAny<object[]>())).Returns((object[] arg) =>
+            {
+                return (from u in quotaData
+                        where u.Id == (Guid)arg[0]
+                        select u).FirstOrDefault();
+            });
 
 
             mockContext = new Mock<DatabaseContext>(new object[] { new DbContextOptions<DatabaseContext>() });
@@ -102,6 +142,7 @@ namespace CarRentalTests
             mockContext.Setup(m => m.Rentals).Returns(mockRentals.Object);
             mockContext.Setup(m => m.Quotas).Returns(mockQuotas.Object);
             mockContext.Setup(m => m.SaveChanges()).Returns(() => changes);
+
         }
 
         public DatabaseContext Context { get { return mockContext.Object; } }
