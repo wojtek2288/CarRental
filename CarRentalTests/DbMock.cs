@@ -1,5 +1,7 @@
 ﻿using CarRental.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,8 @@ namespace CarRentalTests
         private Mock<DbSet<CarRental.Models.Car>> mockCars;
         private Mock<DbSet<CarRental.Models.Rental>> mockRentals;
         private Mock<DbSet<CarRental.Models.Quota>> mockQuotas;
+
+        private int changes = 0;
 
         public DbMock()
         {
@@ -42,6 +46,8 @@ namespace CarRentalTests
                     }
             }.AsQueryable();
             mockUsers = new Mock<DbSet<CarRental.Models.User>>();
+            mockUsers.Setup(m => m.Add(It.IsAny<CarRental.Models.User>()))
+                .Callback(() => changes++);
             mockUsers.As<IQueryable<CarRental.Models.User>>().Setup(m => m.Provider).Returns(userData.Provider);
             mockUsers.As<IQueryable<CarRental.Models.User>>().Setup(m => m.Expression).Returns(userData.Expression);
             mockUsers.As<IQueryable<CarRental.Models.User>>().Setup(m => m.ElementType).Returns(userData.ElementType);
@@ -60,6 +66,8 @@ namespace CarRentalTests
                     }
             }.AsQueryable();
             mockCars = new Mock<DbSet<CarRental.Models.Car>>();
+            mockCars.Setup(m => m.Add(It.IsAny<CarRental.Models.Car>()))
+                            .Callback(() => changes++);
             mockCars.As<IQueryable<CarRental.Models.Car>>().Setup(m => m.Provider).Returns(carData.Provider);
             mockCars.As<IQueryable<CarRental.Models.Car>>().Setup(m => m.Expression).Returns(carData.Expression);
             mockCars.As<IQueryable<CarRental.Models.Car>>().Setup(m => m.ElementType).Returns(carData.ElementType);
@@ -69,6 +77,8 @@ namespace CarRentalTests
             {
             }.AsQueryable();
             mockRentals = new Mock<DbSet<CarRental.Models.Rental>>();
+            mockRentals.Setup(m => m.Add(It.IsAny<CarRental.Models.Rental>()))
+                            .Callback(() => changes++);
             mockRentals.As<IQueryable<CarRental.Models.Rental>>().Setup(m => m.Provider).Returns(rentalData.Provider);
             mockRentals.As<IQueryable<CarRental.Models.Rental>>().Setup(m => m.Expression).Returns(rentalData.Expression);
             mockRentals.As<IQueryable<CarRental.Models.Rental>>().Setup(m => m.ElementType).Returns(rentalData.ElementType);
@@ -78,6 +88,8 @@ namespace CarRentalTests
             {
             }.AsQueryable();
             mockQuotas = new Mock<DbSet<CarRental.Models.Quota>>();
+            mockQuotas.Setup(m => m.Add(It.IsAny<CarRental.Models.Quota>()))
+                            .Callback(() => changes++);
             mockQuotas.As<IQueryable<CarRental.Models.Quota>>().Setup(m => m.Provider).Returns(quotaData.Provider);
             mockQuotas.As<IQueryable<CarRental.Models.Quota>>().Setup(m => m.Expression).Returns(quotaData.Expression);
             mockQuotas.As<IQueryable<CarRental.Models.Quota>>().Setup(m => m.ElementType).Returns(quotaData.ElementType);
@@ -89,6 +101,7 @@ namespace CarRentalTests
             mockContext.Setup(m => m.Cars).Returns(mockCars.Object);
             mockContext.Setup(m => m.Rentals).Returns(mockRentals.Object);
             mockContext.Setup(m => m.Quotas).Returns(mockQuotas.Object);
+            mockContext.Setup(m => m.SaveChanges()).Returns(() => changes);
         }
 
         public DatabaseContext Context { get { return mockContext.Object; } }
