@@ -78,19 +78,6 @@ namespace CarRentalTests
         }
 
         [Test]
-        public void RentCarForeignTest()
-        {
-            Guid carId = CarRental.ForeignAPI.APIUtils.GetCars().First().Id;
-            var quota = CarRental.ForeignAPI.APIUtils.GetPrice(carId, (CarRental.POCO.User)dbMock.userData.First(), TimeSpan.FromDays(2));
-
-            service.RentCar(DateTime.Today.AddDays(2), quota.Id.ToString());
-            dbMock.Rentals.Verify(m => m.Add(It.Is<CarRental.Models.Rental>(arg => arg.Price == quota.Price &&
-                                                                                   arg.CarId == quota.CarId &&
-                                                                                   arg.UserId == quota.UserId &&
-                                                                                   arg.Currency == quota.Currency)));
-        }
-
-        [Test]
         public void GetCarsTest()
         {
             int foreignCount = CarRental.ForeignAPI.APIUtils.GetCars().Count();
