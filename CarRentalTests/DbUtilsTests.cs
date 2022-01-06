@@ -70,12 +70,12 @@ namespace CarRentalTests
         {
             var rental = new CarRental.POCO.Rental
             {
-                CarId = new Guid(),
+                CarId = Guid.NewGuid(),
                 Currency = "USD",
                 Price = 100,
                 From = DateTime.Today.AddDays(2),
                 To = DateTime.Today.AddDays(10),
-                UserId = new Guid()
+                UserId = Guid.NewGuid()
             };
             dbUtils.AddRental(rental);
 
@@ -92,12 +92,12 @@ namespace CarRentalTests
         {
             var quota = new CarRental.POCO.Quota
             {
-                CarId = new Guid(),
+                CarId = Guid.NewGuid(),
                 Currency = "USD",
                 ExpiredAt = DateTime.Now,
                 Price = 100,
                 RentDuration = 2,
-                UserId = new Guid()
+                UserId = Guid.NewGuid()
             };
             dbUtils.AddQuota(quota);
 
