@@ -13,15 +13,15 @@ namespace CarRental.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class SaveFileController : Controller
+    public class FileController : Controller
     {
         private readonly ILogger<UsersController> _logger;
-        private ISaveFileService _saveFileService;
+        private IFileService _fileService;
 
-        public SaveFileController(ILogger<UsersController> logger, ISaveFileService saveFileService)
+        public FileController(ILogger<UsersController> logger, IFileService fileService)
         {
             _logger = logger;
-            _saveFileService = saveFileService;
+            _fileService = fileService;
         }
 
         /// <summary>
@@ -29,14 +29,26 @@ namespace CarRental.Controllers
         /// </summary>
         /// <response code="200">Success</response>
         /// <response code="400">File extension not supported or file over 2 MB</response>
-        [HttpPost]
+        [HttpPost("save")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         public ActionResult Post()
         {
-            string fname = _saveFileService.Post(HttpContext);
+            string fname = _fileService.Post(HttpContext);
             return Ok(fname);
+        }
+
+        /// <summary>
+        /// Downloads an image.
+        /// </summary>
+        /// <response code="200">Success</response>
+        [HttpGet("download/{FileName}")]
+        [ProducesResponseType(200)]
+        public ActionResult Download([FromRoute]string FileName)
+        {
+            MemoryStream ms = _fileService.Download(FileName);
+            return File(ms.GetBuffer(), "application/octet-stream", FileName);
         }
     }
 }

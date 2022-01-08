@@ -7,6 +7,7 @@ const UploadImage = () => {
     const [hideAlert, setHideAlert] = useState(true);
     const [alertText, setAlertText] = useState("");
     const [progress, setProgress] = useState(0);
+    const [fileName, setFileName] = useState("brick_wall2-disp-51223ca91d2-e8da-4834-8f84-42605b1a5066.png");
     const fileSelectedHandler = (event) => {
         setSelectedFile(event.target.files[0]);
         setProgress(0);
@@ -18,7 +19,7 @@ const UploadImage = () => {
         fd.append('image', selectedFile, selectedFile.name);
         try
         {
-            const res = await axios.post('/savefile', fd,
+            const res = await axios.post('/File/save', fd,
             {
                 onUploadProgress: progressEvent => {
                     setProgress(Math.round(progressEvent.loaded / progressEvent.total * 100));
@@ -36,6 +37,26 @@ const UploadImage = () => {
         }
     }
 
+    const fileDownloadHandler = (fileName) => {
+
+        fetch('/File/download/' + fileName,{
+                responseType: 'blob',
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.blob();
+                }
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', fileName); 
+                document.body.appendChild(link);
+                link.click();
+            });
+    }
+
     return (
         <Fragment>
             <Alert color='danger' hidden={hideAlert}>{alertText}</Alert>
@@ -44,6 +65,7 @@ const UploadImage = () => {
             <Input type='file' onChange={fileSelectedHandler} accept="image/*"/>
             <Progress value={progress}/>
             <Button color='primary' onClick={fileUploadHandler}>Upload</Button>
+            <Button color='primary' onClick={() => fileDownloadHandler(fileName)}>Download File</Button>
         </Fragment>
         );
 }

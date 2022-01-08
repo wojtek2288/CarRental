@@ -8,16 +8,22 @@ using System.IO;
 
 namespace CarRental.Services
 {
-    public interface ISaveFileService
+    public interface IFileService
     {
+        MemoryStream Download(string FileName);
         string Post(HttpContext context);
     }
 
-    public class SaveFileService : ISaveFileService
+    public class FileService : IFileService
     {
+        public MemoryStream Download(string FileName)
+        {
+            MemoryStream res = AzureFilesPushPull.DownloadFile(FileName);
+            return res;
+        }
         public string Post(HttpContext context)
         {
-            List<string> extensions = new List<string>() { ".jpg", ".png", ".jpeg" };
+            List<string> extensions = new List<string>() { ".jpg", ".png", ".jpeg", ".pdf" };
             int twoMB = 2 * 1024 * 1024;
 
             var file = context.Request.Form.Files[0];
