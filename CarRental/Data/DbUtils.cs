@@ -75,13 +75,22 @@ namespace CarRental.Data
         {
             var overlappingRentals =
                 from r in context.Rentals
-                where rental.From <= r.To && rental.To >= r.From && rental.CarId == r.CarId
+                where rental.From.Date <= r.To.Date && rental.To.Date >= r.From.Date && rental.CarId == r.CarId
                 select r;
 
-            if (overlappingRentals.Any() || rental.From < DateTime.Now || rental.From > rental.To)
+            if (overlappingRentals.Any() || rental.From.Date < DateTime.Now.Date || rental.From.Date > rental.To.Date)
                 return false;
             else
                 return true;
+        }
+
+        public bool VerifyReturn(POCO.Rental rental)
+        {
+            // zwrot musi
+            // (+) być tego dnia co rental.To
+            // (T) musi być oznaczony jako nieoddany jeszcze
+            // (T) plików ma jeszcze nie być w AzureBlob(?)
+            return true;
         }
 
         public IEnumerable<POCO.Car> GetCars()
@@ -93,6 +102,14 @@ namespace CarRental.Data
             foreach (POCO.Car car in APIUtils.GetCars())
             {
                 yield return car;
+            }
+        }
+
+        public IEnumerable<POCO.Rental> GetRentals()
+        {
+            foreach (Models.Rental rental in context.Rentals)
+            {
+                yield return (POCO.Rental)rental;
             }
         }
 

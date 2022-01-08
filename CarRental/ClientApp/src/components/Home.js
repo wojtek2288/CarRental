@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Button } from 'reactstrap';
 import { GoogleLogin } from 'react-google-login';
 import { Fragment } from 'react';
@@ -12,7 +12,7 @@ const Home = (props) => {
         loading: true
     });
 
-    const fetchData = async ()  => {
+    const fetchData = async () => {
         try {
             const config = {
                 headers: {
@@ -30,6 +30,7 @@ const Home = (props) => {
                 state: res.data,
                 loading: false
             });
+            localStorage.setItem('role', res.data);
         }
         catch (error) {
             console.log(error.response);
@@ -39,11 +40,11 @@ const Home = (props) => {
                 setUser({
                     loading: false
                 });
+                localStorage.removeItem('role');
                 localStorage.removeItem('googleId');
                 localStorage.removeItem('tokenId');
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('email');
-                props.history.push('/');
             }
         }
     }
@@ -51,9 +52,9 @@ const Home = (props) => {
     useEffect(() => {
         if (user.loading === false) {
             if (user.state === 'User')
-                props.history.push('/exampleuser');
+                props.history.push('/user');
             else if (user.state === 'Admin')
-                props.history.push('/exampleadmin');
+                props.history.push('/admin');
             else if (user.state === 'NotRegistered')
                 props.history.push('/signup');
             else if (user.state === '')
@@ -78,7 +79,7 @@ const Home = (props) => {
 
     return (
         <Fragment>
-            <NavMenu logged={false}/>
+            <NavMenu logged={false} />
             <div className='home'>
                 <Container>
                     <div className='home-text'>

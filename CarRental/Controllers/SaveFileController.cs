@@ -29,13 +29,28 @@ namespace CarRental.Controllers
         /// </summary>
         /// <response code="200">Success</response>
         /// <response code="400">File extension not supported or file over 2 MB</response>
-        [HttpPost]
+        [HttpPost("image")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public ActionResult Post()
+        public ActionResult PostImage()
         {
-            string fname = _saveFileService.Post(HttpContext);
+            string fname = _saveFileService.PostImage(HttpContext);
+            return Ok(fname);
+        }
+
+        /// <summary>
+        /// Adds a PDF document.
+        /// </summary>
+        /// <response code="200">Success</response>
+        /// <response code="400">File extension not supported or file over 2 MB</response>
+        [HttpPost("document")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public ActionResult PostDocument()
+        {
+            string fname = _saveFileService.PostPDF(HttpContext);
             return Ok(fname);
         }
     }

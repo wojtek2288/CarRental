@@ -7,6 +7,7 @@ const UploadImage = () => {
     const [hideAlert, setHideAlert] = useState(true);
     const [alertText, setAlertText] = useState("");
     const [progress, setProgress] = useState(0);
+    
     const fileSelectedHandler = (event) => {
         setSelectedFile(event.target.files[0]);
         setProgress(0);
@@ -18,7 +19,7 @@ const UploadImage = () => {
         fd.append('image', selectedFile, selectedFile.name);
         try
         {
-            const res = await axios.post('/savefile', fd,
+            const res = await axios.post('/savefile/image', fd,
             {
                 onUploadProgress: progressEvent => {
                     setProgress(Math.round(progressEvent.loaded / progressEvent.total * 100));
@@ -42,8 +43,8 @@ const UploadImage = () => {
             <p>Supported extensions: .jpg, .jpeg, .png</p>
             <p>Max file size: 2MB</p>
             <Input type='file' onChange={fileSelectedHandler} accept="image/*"/>
+            <button type='button' onClick={fileUploadHandler}>Wyślij</button>
             <Progress value={progress}/>
-            <Button color='primary' onClick={fileUploadHandler}>Upload</Button>
         </Fragment>
         );
 }

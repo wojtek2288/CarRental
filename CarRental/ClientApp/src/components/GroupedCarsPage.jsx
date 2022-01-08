@@ -1,11 +1,11 @@
 ﻿import React, { Fragment, useState, useEffect } from 'react';
 import { CardTitle, Container, FormGroup, Input, Spinner } from 'reactstrap';
-import CarTable from './CarTable'
+import CarTable from './CarTableAll';
 import NavMenu from './NavMenu';
 
-export default function ViewCars() {
+export default function GroupedCars({ role }) {
     const [data, setData] = useState([])
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true)
     const [brand, setBrand] = useState("")
     const [model, setModel] = useState("")
     const [sortColumn, setSortColumn] = useState("")
@@ -17,20 +17,30 @@ export default function ViewCars() {
             .then(() => setLoading(false));
     }, [])
 
+    function getbm(data) {
+        var brandmod = [];
+        data.forEach(
+            car => {
+                var key = (car[['brand']] + ' ' + car[['model']]);
+                if (brandmod.find(bm => bm === key) === undefined) {
+                    brandmod.push(key);
+                }
+            });
+        return brandmod;
+    }
+
     function search(rows) {
         return rows.filter(
-            row => row.brand.indexOf(brand) >= 0
-                && row.model.indexOf(model) >= 0
+            row => row[0].brand.indexOf(brand) >= 0
+                && row[0].model.indexOf(model) >= 0
         );
     }
 
     function byBrand(row1, row2) {
-        return row1.brand > row2.brand;
+        return row1[0].brand > row2[0].brand;
     }
     function byModel(row1, row2) {
-        console.log(row1.model)
-        console.log(row2.model)
-        return row1.model > row2.model;
+        return row1[0].model > row2[0].model;
     }
 
     function sortRows(rows) {
@@ -38,7 +48,6 @@ export default function ViewCars() {
 
         if (sortColumn == 'Model') {
             cmp = byModel
-            console.log(cmp)
         }
         if (sortColumn == 'Brand') {
             cmp = byBrand
@@ -54,8 +63,6 @@ export default function ViewCars() {
                 let r1 = tmp[i];
                 let r2 = tmp[j];
                 if (i != j && cmp(r2, r1)) {
-                    console.log(r1)
-                    console.log(r2)
                     tmp[i] = r2
                     tmp[j] = r1
                 }
@@ -65,12 +72,15 @@ export default function ViewCars() {
     }
 
     function customview() {
-        console.log(sortColumn)
-        console.log(data);
-        var rows = data
+        let brandmod = getbm(data);
+        var grouped = groupBy(data, ['brand'], ['model']);
+        var toMap = [];
+        brandmod.forEach(bm => toMap.push(grouped[bm]));
+
         var res;
+        let rows = toMap;
         if (sortColumn != '') {
-            res = sortRows(search(rows));
+            res = sortRows(rows);
         }
         else {
             res = search(rows)
@@ -78,8 +88,16 @@ export default function ViewCars() {
         return res;
     }
 
+    var groupBy = function (data, key1, key2) {
+        return data.reduce(function (storage, item) {
+            var group = item[key1] + ' ' + item[key2];
+            storage[group] = storage[group] || [];
+            storage[group].push(item);
+            return storage;
+        }, {});
+    };
+
     const sortable = ['', 'Company', 'Brand', 'Model'];
-    const contents = <CarTable data={customview()} />
 
     return (
         <Fragment>
@@ -123,10 +141,13 @@ export default function ViewCars() {
                 </div>
             </Container>
             {loading == true ?
-            (<Spinner className="center" />) :
-            (<Container className='margin-top'>
-                {contents}
-            </Container>)}
+                (<Spinner className="center" />) :
+                (<Container className='margin-top'>
+                    <CarTable data={customview()} role={role}/>
+                    {/*{role === 'Admin' ?*/}
+                    {/*    <CarTableAdmin data={customview()} /> :*/}
+                    {/*    <CarTableUser data={customview()} />}*/}
+                </Container>)}
         </Fragment>
     );
 }

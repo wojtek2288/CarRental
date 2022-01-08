@@ -1,0 +1,55 @@
+﻿.search-text {
+    background-color: lightgrey;
+    padding: 1rem;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.details-font {
+    font-weight: 500;
+}
+
+.search-input {
+    margin-left: 10px;
+}
+
+#cars {
+    width: 100%;
+    border: hidden;
+}
+
+#cars thead {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background-color: white;
+}
+
+#cars td, #cars th {
+    /*border: 1px solid #ddd;*/
+    padding: 8px;
+}
+
+#cars tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+/*#cars tr:hover {
+    background-color: #ddd;
+}*/
+
+#cars th {
+    text-align: left;
+    color: #1b6ec2;
+    background-color: white;
+}
+
+
+#car-list tr:nth-child(odd) {
+    background-color: transparent;
+}
+#car-list tr:nth-child(even) {
+    background-color: transparent;
+}
+
