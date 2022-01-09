@@ -36,39 +36,18 @@
             Gets all cars.
             </summary>
         </member>
-        <member name="M:CarRental.Controllers.HistController.AllRenting">
-            <summary>
-            Returns currently rented cars
-            </summary>
-        </member>
-        <member name="M:CarRental.Controllers.HistController.AllRented">
-            <summary>
-            Returns previously rented cars
-            </summary>
-        </member>
-        <member name="M:CarRental.Controllers.HistController.RentingByUser(System.String)">
-            <summary>
-            Returns currently rented cars by user
-            </summary>
-        </member>
-        <member name="M:CarRental.Controllers.HistController.RentedByUser(System.String)">
-            <summary>
-            Returns previously rented cars by user
-            </summary>
-        </member>
-        <member name="M:CarRental.Controllers.SaveFileController.PostImage">
+        <member name="M:CarRental.Controllers.FileController.Post">
             <summary>
             Adds an image.
             </summary>
             <response code="200">Success</response>
             <response code="400">File extension not supported or file over 2 MB</response>
         </member>
-        <member name="M:CarRental.Controllers.SaveFileController.PostDocument">
+        <member name="M:CarRental.Controllers.FileController.Download(System.String)">
             <summary>
-            Adds a PDF document.
+            Downloads an image.
             </summary>
             <response code="200">Success</response>
-            <response code="400">File extension not supported or file over 2 MB</response>
         </member>
         <member name="M:CarRental.Controllers.UsersController.Post(CarRental.POCO.User)">
             <summary>

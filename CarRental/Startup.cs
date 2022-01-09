@@ -30,9 +30,8 @@ namespace CarRental
             services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ICarsService, CarsService>();
-            services.AddScoped<ISaveFileService, SaveFileService>();
+            services.AddScoped<IFileService, FileService>();
             services.AddScoped<IUsersService, UsersService>();
-            services.AddScoped<IHistService, HistService>();
             services.AddScoped<IRentalsService, RentalsService>();
             services.AddScoped<ErrorHandlingMiddleware>();
 

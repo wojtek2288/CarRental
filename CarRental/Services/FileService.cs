@@ -8,18 +8,25 @@ using System.IO;
 
 namespace CarRental.Services
 {
-    public interface ISaveFileService
+    public interface IFileService
     {
-        string PostImage(HttpContext context);
-        string PostPDF(HttpContext context);
+        MemoryStream Download(string FileName);
+        string Post(HttpContext context);
     }
 
-    public class SaveFileService : ISaveFileService
+    public class FileService : IFileService
     {
-        public string Post(HttpContext context, List<string> extensions)
+        public MemoryStream Download(string FileName)
         {
-            var file = context.Request.Form.Files[0];
+            MemoryStream res = AzureFilesPushPull.DownloadFile(FileName);
+            return res;
+        }
+        public string Post(HttpContext context)
+        {
+            List<string> extensions = new List<string>() { ".jpg", ".png", ".jpeg", ".pdf" };
             int twoMB = 2 * 1024 * 1024;
+
+            var file = context.Request.Form.Files[0];
 
             if (!extensions.Contains(Path.GetExtension(file.FileName)))
             {
@@ -38,17 +45,6 @@ namespace CarRental.Services
                 string fname = AzureFilesPushPull.UploadFile(file.FileName, file.OpenReadStream());
                 return fname;
             }
-        }
-
-        public string PostImage(HttpContext context)
-        {
-            List<string> extensions = new List<string>() { ".jpg", ".png", ".jpeg" };
-            return Post(context, extensions);
-        }
-        public string PostPDF(HttpContext context)
-        {
-            List<string> extensions = new List<string>() { ".pdf" };
-            return Post(context, extensions);
         }
     }
 }

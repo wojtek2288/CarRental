@@ -42,10 +42,7 @@ namespace CarRental.Services
                 Year = date.Year,
                 Month = date.Month,
                 Day = date.Day,
-                
                 Note = "Overall State:\nGood\n\nDescription:\nCar smells nice :)",
-                //ImageFile = "samochodzik.jpg",
-                //DocumentFile = "umowa.pdf",
             };
             return result;
         }
@@ -63,15 +60,20 @@ namespace CarRental.Services
         {
             var foundUser = (user_id != "" ? dbUtils.FindUserByAuthID(user_id) : null);
             var cars = dbUtils.GetCars();
-            // poza now jeszcze spr czy aktywny rental
-            var rentals = dbUtils.GetRentals().ToList().Where(r => now ? r.To >= DateTime.Now : r.To < DateTime.Now);
-            var res = from car in cars
-                      join rental in rentals on car.Id equals rental.CarId
-                      where user_id=="" || (foundUser!=null && rental.UserId==foundUser.Id)
-                      select new { car, rental };
+
+            var rentals = dbUtils.GetRentals().ToList().Where(r => r.To >= DateTime.Now && r.From <= DateTime.Now);
+            if (!now) rentals = dbUtils.GetRentals().ToList();
+
+            var query = from car in cars
+                        join rental in rentals on car.Id equals rental.CarId
+                        select new { car, rental };
+            if (foundUser!=null) query = from car in cars
+                                         join rental in rentals on car.Id equals rental.CarId
+                                         where rental.UserId == foundUser.Id
+                                         select new { car, rental };
 
             var result = new List<RentalsController.DetailedRental>();
-            foreach (var el in res)
+            foreach (var el in query)
             {
                 var hist = WithDateParts(el.rental.To);
                 hist.Id = el.rental.Id;

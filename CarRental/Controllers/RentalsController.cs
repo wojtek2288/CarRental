@@ -47,18 +47,18 @@ namespace CarRental.Controllers
             return _rentalsService.GetRentals();
         }
 
-        [HttpGet("hist")]
-        [ProducesResponseType(200)]
-        public IEnumerable<DetailedRental> GetDetPrev()
-        {
-            return _rentalsService.GetDetPrev();
-        }
-
         [HttpGet("details")]
         [ProducesResponseType(200)]
         public IEnumerable<DetailedRental> GetDetailed()
         {
             return _rentalsService.GetDetailed();
+        }
+
+        [HttpGet("hist")]
+        [ProducesResponseType(200)]
+        public IEnumerable<DetailedRental> GetDetPrev()
+        {
+            return _rentalsService.GetDetPrev();
         }
 
         [HttpGet("curr")]

@@ -2,6 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react';
 import { CardBody, CardTitle, Container, Card, Button } from 'reactstrap';
 import NavMenu from './NavMenu';
 import ReturnForm from './ReturnModal';
+import ReturnData from './Download';
 
 const RentedCars = (props) => {
     const [data, setData] = useState([]);
@@ -21,12 +22,13 @@ const RentedCars = (props) => {
     }
 
     useEffect(() => {
-        // const url = '/rentals/details';
         const url =  props.role === 'User' ?  props.url+ '/' + localStorage.getItem('googleId') : props.url;
         fetch(url)
             .then((response) => response.json())
             .then((json) => setData(json));
     }, [])
+
+    console.log(data);
 
     const getDate = (hist) => {
         return new Date(hist.year, hist.month, hist.day);
@@ -43,7 +45,7 @@ const RentedCars = (props) => {
                             <tr>
                                 <th>Brand</th>
                                 <th>Model</th>
-                                <th>{props.url === '/hist/Rented' ? "Details" : "Action"}</th>
+                                <th>{props.url === '/rentals/hist' ? "Details" : "Action"}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -64,21 +66,32 @@ const RentedCars = (props) => {
                                             <div hidden={!clicked.state || hist.id != clicked.id}>
                                                 <b>Company:</b> <p>CarRental</p>
                                                 <b>Return Date:</b> <p>{getDate(hist).toDateString()}</p>
-                                                <b>Note:</b> <p>{hist.note}</p>
-                                                <Button color="primary" size="sm">💾 Download</Button><br/>
-                                                <Button color="secondary" size="sm">💾 Download</Button>
                                             </div>
+                                            <ReturnData hist={hist} hidden={props.url === '/rentals/curr' || 
+                                            !clicked.state || hist.id != clicked.id}></ReturnData>
                                         </td>
                                         :
                                         <td>
-                                            <Button hidden={props.url === '/hist/Renting'} id="rent_me" outline color="primary" type="button">See Details?</Button>
-                                            <Button hidden={props.url === '/hist/Rented'} color='primary' onClick={() =>
+                                            <Button id="rent_me" onClick={() => {
+                                                if (hist.id !== clicked.id)
+                                                    setClicked({ state: true, id: hist.id });
+                                                else
+                                                    setClicked({ state: !clicked.state, id: hist.id });
+                                            }}
+                                                outline color="primary" type="button">See Details
+                                            </Button>
+                                            <div hidden={!clicked.state || hist.id != clicked.id}>
+                                                <b>Company:</b> <p>CarRental</p>
+                                                <b>Return Date:</b> <p>{getDate(hist).toDateString()}</p>
+                                            </div>
+
+                                            <Button hidden={props.url === '/rentals/hist'} color='primary' onClick={() =>
                                                 {
                                                     openModal();
                                                     setChoosenHist(hist);
                                                 }
                                             }>Return</Button>
-                                            <ReturnForm hidden={props.url === '/hist/Rented'} modalIsOpen={modalIsOpen} closeModal={closeModal} choosenCar={choosenHist} />
+                                            <ReturnForm hidden={props.url === '/rentals/hist'} modalIsOpen={modalIsOpen} closeModal={closeModal} choosenCar={choosenHist} />
                                         </td>
                                     }
                                 </tr>

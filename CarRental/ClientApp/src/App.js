@@ -10,12 +10,10 @@ import AddCar from './components/AddCar';
 import GroupedCars from './components/GroupedCarsPage';
 
 import ProtectedRoute from './components/Routes/ProtectedRoute';
-import UserRented from './components/UserCurr';
-import UserRenting from './components/UserHist';
+import UserRented from './components/UserHist';
+import UserRenting from './components/UserCurr';
 import AllRented from './components/AdminHist';
 import AllRenting from './components/AdminCurr';
-
-import Mixed from './components/MixedClasses';
 
 export default class App extends Component {
     static displayName = App.name;
@@ -26,7 +24,6 @@ export default class App extends Component {
                 <Route exact path='/' component={Home} />
                 <Route path='/signup' component={SignUp} />
                 <Route path='/upload' component={UploadImage} />
-                <Route path='/mix' component={Mixed} />
                 <ProtectedRoute path='/addcar' component={AddCar} role='Admin' />
                 <ProtectedRoute path='/admin' component={GroupedCars} role='Admin' />
                 <ProtectedRoute path='/rentalsadmin' component={AllRenting} role='Admin' />

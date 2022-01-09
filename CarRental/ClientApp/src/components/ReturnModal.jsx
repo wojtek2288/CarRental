@@ -10,45 +10,41 @@ const ReturnForm = (props) => {
         description: '',
         carstate: 'Good'
     });
-    const [selectedFile, setSelectedFile] = useState(null);    
-    const [hideAlert, setHideAlert] = useState(true);
-    const [alertText, setAlertText] = useState("");
-    const [progress, setProgress] = useState(0);
-
-    const onChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    }
-    const fileSelectedHandler = (event) => {
-        setSelectedFile(event.target.files[0]);
-        setProgress(0);
-        setHideAlert(true);
-    }
-    const fileUploadHandler = async () => {
-        const fd = new FormData();
-        fd.append('image', selectedFile, selectedFile.name);
-        try
-        {
-            const res = await axios.post('/savefile/image', fd,
-            {
-                onUploadProgress: progressEvent => {
-                    setProgress(Math.round(progressEvent.loaded / progressEvent.total * 100));
-                }
-            });
-            console.log(res);
-        }
-        catch (err)
-        {
-            console.log(err);
-            if (err.response.status === 400) {
-                setAlertText(err.response.data);
-                setHideAlert(false);
-            }
-        }
-    }
-
 
     const close = () =>{
         props.closeModal();
+    }
+
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedDocument, setSelectedDocument] = useState(null);
+    const imageSelectedHandler = (event) => { setSelectedImage(event.target.files[0]);}
+    const documentSelectedHandler = (event) => { setSelectedDocument(event.target.files[0]);}
+
+    const imageUploadHandler = async () => {
+        const fd = new FormData();
+        fd.append('image', selectedImage, selectedImage.name);
+        try
+        {
+            const res = await axios.post('/File/save', fd);
+            console.log(res);
+        }
+        catch (err) { console.log(err);}
+        setSelectedImage(null);
+    }
+    const documentUploadHandler = async () => {
+        const fd = new FormData();
+        fd.append('document', selectedDocument, selectedDocument.name);
+        try
+        {
+            const res = await axios.post('/File/save', fd);
+            console.log(res);
+        }
+        catch (err) { console.log(err);}
+        setSelectedDocument(null);
+    }
+
+    const onChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     }
 
     return (
@@ -115,16 +111,16 @@ const ReturnForm = (props) => {
                                     onChange={(e) => onChange(e)}
                                 />
                                 <Label for="descr">
-                                    Car Foto
+                                    Car Picture
                                 </Label>
                                 <Input
                                     id="carfoto"
                                     name="carfoto"
                                     type="file"
-                                    value={formData.carfoto}
-                                    onChange={fileSelectedHandler} 
+                                    onChange={imageSelectedHandler} 
                                     accept="image/*"
                                 />
+                                <button hidden={selectedImage===null} type='button' onClick={imageUploadHandler}>Upload</button>
                                 <Label for="descr">
                                     Document
                                 </Label>
@@ -132,10 +128,10 @@ const ReturnForm = (props) => {
                                     id="document"
                                     name="document"
                                     type="file"
-                                    value={formData.document}
-                                    onChange={(e) => onChange(e)}
-                                    
+                                    onChange={documentSelectedHandler}
+                                    accept="document/*"
                                 />
+                                <button hidden={selectedDocument===null} type='button' onClick={documentUploadHandler}>Upload</button>
                             </CardBody>
                         </Card>
                     </FormGroup>
