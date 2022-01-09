@@ -4,11 +4,14 @@ import { Button } from "reactstrap";
 
 const ReturnData = (props) =>{
 
-    // const imageName = props.hist.imagename; 
-    // const documentName = props.hist.documentname; 
+    const imageName = props.hist.imagename; 
+    const documentName = props.hist.documentname; 
 
-    const [imageName, setImageName] = useState("brick_wall2-disp-51223ca91d2-e8da-4834-8f84-42605b1a5066.png");
-    const [documentName, setDocumentName] = useState("brick_wall2-disp-51223ca91d2-e8da-4834-8f84-42605b1a5066.png");
+    console.log(imageName);
+    console.log(documentName);
+
+    //const [imageName, setImageName] = useState("brick_wall2-disp-51223ca91d2-e8da-4834-8f84-42605b1a5066.png");
+    //const [documentName, setDocumentName] = useState("brick_wall2-disp-51223ca91d2-e8da-4834-8f84-42605b1a5066.png");
     
     const fileDownloadHandler = (fileName) => {
 

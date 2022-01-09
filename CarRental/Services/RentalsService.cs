@@ -20,6 +20,7 @@ namespace CarRental.Services
         IEnumerable<RentalsController.DetailedRental> GetDetCurr();
         IEnumerable<RentalsController.DetailedRental> GetUserPrev(string user_id);
         IEnumerable<RentalsController.DetailedRental> GetUserCurr(string user_id);
+        void ReturnCar(Guid rentId, string image, string document, string note);
     }
 
     public class RentalsService : IRentalsService
@@ -36,13 +37,12 @@ namespace CarRental.Services
             var car = dbUtils.FindCar(rental.CarId);
             RentalsController.DetailedRental result = new RentalsController.DetailedRental()
             {
-                Id = rental.Id,
-                Brand = car.Brand,
-                Model = car.Model,
-                Year = date.Year,
-                Month = date.Month,
-                Day = date.Day,
-                Note = "Overall State:\nGood\n\nDescription:\nCar smells nice :)",
+                id = rental.Id,
+                brand = car.Brand,
+                model = car.Model,
+                year = date.Year,
+                month = date.Month,
+                day = date.Day
             };
             return result;
         }
@@ -50,9 +50,9 @@ namespace CarRental.Services
         public static RentalsController.DetailedRental WithDateParts(DateTime date){
             return new RentalsController.DetailedRental()
             {
-                Year = date.Year,
-                Month = date.Month,
-                Day = date.Day
+                year = date.Year,
+                month = date.Month,
+                day = date.Day
             };
         }
 
@@ -61,7 +61,7 @@ namespace CarRental.Services
             var foundUser = (user_id != "" ? dbUtils.FindUserByAuthID(user_id) : null);
             var cars = dbUtils.GetCars();
 
-            var rentals = dbUtils.GetRentals().ToList().Where(r => r.To >= DateTime.Now && r.From <= DateTime.Now);
+            var rentals = dbUtils.GetRentals().ToList().Where(r => r.To >= DateTime.Now && r.From <= DateTime.Now && r.Active);
             if (!now) rentals = dbUtils.GetRentals().ToList();
 
             var query = from car in cars
@@ -76,10 +76,10 @@ namespace CarRental.Services
             foreach (var el in query)
             {
                 var hist = WithDateParts(el.rental.To);
-                hist.Id = el.rental.Id;
-                hist.Brand = el.car.Brand;
-                hist.Model = el.car.Model;
-                hist.Note = "A note from Worker";
+                hist.id = el.rental.Id;
+                hist.brand = el.car.Brand;
+                hist.model = el.car.Model;
+                hist.note = "A note from Worker";
                 result.Add(hist);
             }
 
@@ -117,6 +117,24 @@ namespace CarRental.Services
         public IEnumerable<RentalsController.DetailedRental> GetUserCurr(string user_id)
         {
             return FilteredDisp(true, user_id);
+        }
+
+        public void ReturnCar(Guid Id, string image, string document, string note)
+        {
+            //Guid Id = Guid.Parse(rent_id);
+            var rental = dbUtils.FindRental(Id);
+            
+            if (rental == null) throw new BadRequestException("Wrong rental id");
+
+            rental.ImageName = image;
+            rental.DocumentName = document;
+            rental.Note = note;
+            rental.Active = false;
+
+            if (!dbUtils.UpdateRental(Id, rental))
+            {
+                if (!APIUtils.ReturnCar(Id)) throw new BadRequestException("Return not possible");
+            }
         }
     }
 }

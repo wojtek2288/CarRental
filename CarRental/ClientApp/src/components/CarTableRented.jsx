@@ -91,7 +91,7 @@ const RentedCars = (props) => {
                                                     setChoosenHist(hist);
                                                 }
                                             }>Return</Button>
-                                            <ReturnForm hidden={props.url === '/rentals/hist'} modalIsOpen={modalIsOpen} closeModal={closeModal} choosenCar={choosenHist} />
+                                            <ReturnForm hidden={props.url === '/rentals/hist'} modalIsOpen={modalIsOpen} closeModal={closeModal} choosenHist={choosenHist} />
                                         </td>
                                     }
                                 </tr>

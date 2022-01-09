@@ -64,6 +64,23 @@ namespace CarRental.Data
             return context.SaveChanges() == 1;
         }
 
+        public bool UpdateRental(Guid Id, POCO.Rental rental)
+        {
+            Models.Rental found = context.Rentals.Find(Id);
+            Models.Rental updated = found;
+            updated.Active = rental.Active;
+            updated.ImageName = rental.ImageName;
+            updated.DocumentName = rental.DocumentName;
+            updated.Note = rental.Note;
+
+            //using (context)
+            //{
+                context.Rentals.Attach(updated);
+                context.Entry(updated).Property(x => x.ImageName).IsModified = true;
+                return context.SaveChanges() == 1;
+            //}
+        }
+
         public POCO.Rental FindRental(Guid Id)
         {
             Models.Rental found = context.Rentals.Find(Id);

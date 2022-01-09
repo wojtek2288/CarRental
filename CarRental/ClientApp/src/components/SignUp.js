@@ -50,7 +50,9 @@ const SignUp = (props) => {
     }
 
     if (loading === false) {
-        props.history.push('/exampleuser');
+        if (localStorage.role==='User') props.history.push('/user');
+        if (localStorage.role==='Admin') props.history.push('/admin');
+        else props.history.push('/');
     }
 
     return (      

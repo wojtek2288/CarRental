@@ -16,21 +16,17 @@ namespace CarRental.Controllers
         private IRentalsService _rentalsService;
         public class DetailedRental
         {
-            public Guid Id { get; set; }
-            public string Brand { get; set; }
-            public string Model { get; set; }
-            public int Year { get; set; }
-            public int Month { get; set; }
-            public int Day { get; set; }
+            public Guid id { get; set; }
+            public string brand { get; set; }
+            public string model { get; set; }
+            public int year { get; set; }
+            public int month { get; set; }
+            public int day { get; set; }
 
-            /* te pola będą razem z bool Active w klasie Rental, 
-             * te będzie zmieniał admin*/
-
-            /* TODO note ma zawierać złączone(albo rozbić na kilka) teksty z formularza Admina */
-            public string Note { get; set; }
-
-            /* TODO nazwy plików, będą się wyświetlać Userowi w archiwum */
-            //public string ImageFile, DocumentFile;
+            public bool active { get; set; }
+            public string imagename { get; set; }
+            public string documentname { get; set; }
+            public string note { get; set; }
 
         }
 
@@ -80,6 +76,17 @@ namespace CarRental.Controllers
         public IEnumerable<DetailedRental> GetUserCurr(string user_id)
         {
             return _rentalsService.GetUserCurr(user_id);
+        }
+
+        [HttpPatch("return/{rental_id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(405)]
+        public IActionResult ReturnCar([FromBody] DetailedRental rental)
+        {
+            _rentalsService.ReturnCar(rental.id, rental.imagename, rental.documentname, rental.note);
+            return Ok();
         }
     }
 }

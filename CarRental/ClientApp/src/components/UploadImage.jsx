@@ -8,6 +8,7 @@ const UploadImage = () => {
     const [alertText, setAlertText] = useState("");
     const [progress, setProgress] = useState(0);
     const [fileName, setFileName] = useState("brick_wall2-disp-51223ca91d2-e8da-4834-8f84-42605b1a5066.png");
+
     const fileSelectedHandler = (event) => {
         setSelectedFile(event.target.files[0]);
         setProgress(0);

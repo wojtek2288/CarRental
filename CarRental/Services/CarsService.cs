@@ -89,6 +89,7 @@ namespace CarRental.Services
                     Price = quota.Price,
                     From = startDate,
                     To = startDate.AddDays(quota.RentDuration),
+                    Active = true
                 };
             }
             else
@@ -103,7 +104,8 @@ namespace CarRental.Services
                     Currency = quota.Currency,
                     From = startDate,
                     To = startDate.AddDays(quota.RentDuration),
-                    Price = quota.Price
+                    Price = quota.Price,
+                    Active = true
                 };
             }
 

@@ -15,9 +15,10 @@ namespace CarRental.POCO
         public Guid CarId { get; set; }
         public Guid UserId { get; set; }
 
-        //public bool Active;
-        //public string ImageName;
-        //public string DocumentName;
+        public bool Active { get; set; }
+        public string ImageName { get; set; }
+        public string DocumentName { get; set; }
+        public string Note { get; set; }
 
         public static explicit operator Rental(Models.Rental rental)
         {
