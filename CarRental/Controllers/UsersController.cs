@@ -33,7 +33,7 @@ namespace CarRental.Controllers
         public ActionResult Post([FromBody] User NewUser)
         {
             _usersService.Post(NewUser);
-            return Ok();
+            return Ok(NewUser.AuthID);
         }
     }
 }

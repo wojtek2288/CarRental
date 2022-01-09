@@ -78,7 +78,7 @@ export default function ViewCars() {
         return res;
     }
 
-    const sortable = ['', 'Company', 'Brand', 'Model'];
+    const sortable = ['','Company', 'Brand', 'Model'];
     const contents = <CarTable data={customview()} />
 
     return (
