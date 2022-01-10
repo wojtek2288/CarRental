@@ -40,7 +40,7 @@ namespace CarRental.Services
             if (user == null) throw new NotFoundException("User not found");
 
             Guid carId = Guid.Parse(car_id);
-            Car car = dbUtils.FindCar(carId);
+            Car car = dbUtils.FindCarInDatabase(carId);
 
             TimeSpan rentDuration = dates.to - dates.from;
 
@@ -79,7 +79,7 @@ namespace CarRental.Services
             Quota quota = dbUtils.FindQuota(Id);
             Rental rental;
 
-            if (dbUtils.FindCar(quota.CarId) != null)
+            if (dbUtils.FindCarInDatabase(quota.CarId) != null)
             {
                 rental = new Rental()
                 {

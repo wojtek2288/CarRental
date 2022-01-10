@@ -41,7 +41,7 @@ namespace CarRentalTests
             };
             service.AddCar(car);
 
-            var c = dbUtils.FindCar(car.Id);
+            var c = dbUtils.FindCarInDatabase(car.Id);
             Assert.True(c.Brand == car.Brand &&
                         c.Description == car.Description &&
                         c.Horsepower == car.Horsepower &&
@@ -85,7 +85,31 @@ namespace CarRentalTests
 
             service.RentCar(DateTime.Today.AddDays(2), quota.Id.ToString());
             CarRental.POCO.Rental rental = null;
-            foreach(var r in dbUtils.GetRentals())
+            foreach (var r in dbUtils.GetRentals())
+            {
+                if (r.CarId == quota.CarId && r.UserId == quota.UserId)
+                {
+                    rental = r;
+                    break;
+                }
+            }
+            Assert.True(rental.Price == quota.Price &&
+                        rental.CarId == quota.CarId &&
+                        rental.UserId == quota.UserId &&
+                        rental.Currency == quota.Currency);
+        }
+
+        [Test]
+        public void RentCarForeignTest()
+        {
+            string carId = CarRental.ForeignAPI.APIUtils.GetCars().First().Id.ToString();
+            var quota = service.GetPrice(new CarRental.Controllers.CarsController.Dates { from = DateTime.Today.AddDays(2), to = DateTime.Today.AddDays(7) },
+                                         "googleid",
+                                         carId);
+
+            service.RentCar(DateTime.Today.AddDays(2), quota.Id.ToString());
+            CarRental.POCO.Rental rental = null;
+            foreach (var r in dbUtils.GetRentals())
             {
                 if (r.CarId == quota.CarId && r.UserId == quota.UserId)
                 {
