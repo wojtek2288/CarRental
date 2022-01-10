@@ -81,7 +81,7 @@ namespace CarRental.Data
 
         public IEnumerable<POCO.Rental> GetRentals()
         {
-            foreach(Models.Rental rental in context.Rentals)
+            foreach (Models.Rental rental in context.Rentals)
             {
                 yield return (POCO.Rental)rental;
             }
@@ -133,6 +133,14 @@ namespace CarRental.Data
             return (POCO.Car)found;
         }
 
+        public POCO.Car FindCarInDatabase(Guid id)
+        {
+            Models.Car found = context.Cars.Find(id);
+
+            if (found == null) return null;
+            return (POCO.Car)found;
+        }
+
         public IEnumerable<POCO.User> GetUsers()
         {
             foreach (Models.User user in context.Users)
@@ -173,7 +181,7 @@ namespace CarRental.Data
 
         public POCO.Quota AddQuota(POCO.Quota quota)
         {
-            if(quota.Id == Guid.Empty) quota.Id = Guid.NewGuid();
+            if (quota.Id == Guid.Empty) quota.Id = Guid.NewGuid();
             context.Quotas.Add(new Models.Quota()
             {
                 Id = quota.Id,
