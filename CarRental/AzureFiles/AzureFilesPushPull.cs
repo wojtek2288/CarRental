@@ -43,5 +43,16 @@ namespace CarRental.AzureFiles
             blobClient.DownloadTo(ms);
             return ms;
         }
+
+        public static bool DeleteFile(string fileName)
+        {
+            BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
+
+            BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+            BlobClient blobClient = containerClient.GetBlobClient(fileName);
+
+            return blobClient.DeleteIfExists();
+        }
     }
 }
