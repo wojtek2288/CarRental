@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Moq;
 using Microsoft.EntityFrameworkCore;
 using CarRental.Data;
 
@@ -13,14 +12,16 @@ namespace CarRentalTests
     [TestFixture]
     internal class DbUtilsTests
     {
-        DbMock dbMock;
         DbUtils dbUtils;
 
         [SetUp]
         public void Setup()
         {
-            dbMock = new();
-            dbUtils = new(dbMock.Context);
+            var options = new DbContextOptionsBuilder<DatabaseContext>().UseInMemoryDatabase(databaseName: "CarRental").Options;
+            var context = new DatabaseContext(options);
+            context.Database.EnsureDeleted();
+            context.Database.EnsureCreated();
+            dbUtils = new(context);
         }
 
         [Test]
@@ -37,12 +38,8 @@ namespace CarRentalTests
             };
             dbUtils.AddUser(user);
 
-            dbMock.Users.Verify(m => m.Add(It.Is<CarRental.Models.User>(arg => arg.AuthID == user.AuthID &&
-                                                                            arg.DateOfBirth == user.DateOfBirth &&
-                                                                            arg.DriversLicenseDate == user.DriversLicenseDate &&
-                                                                            arg.Email == user.Email &&
-                                                                            arg.Location == user.Location &&
-                                                                            arg.Role == CarRental.Models.User.UserRole.CLIENT)), Times.Once);
+            user = dbUtils.FindUserByAuthID("randomgoogleid");
+            Assert.True(user.Email == "randomemail@randomsite.com");
         }
 
         [Test]
@@ -58,11 +55,16 @@ namespace CarRentalTests
             };
             dbUtils.AddCar(car);
 
-            dbMock.Cars.Verify(m => m.Add(It.Is<CarRental.Models.Car>(arg => arg.Brand == car.Brand &&
-                                                                          arg.Description == car.Description &&
-                                                                          arg.Horsepower == car.Horsepower &&
-                                                                          arg.Model == car.Model &&
-                                                                          arg.YearOfProduction == car.YearOfProduction)), Times.Once);
+            foreach (var c in dbUtils.GetNewCars())
+            {
+                if (c.Brand == car.Brand &&
+                   c.Description == car.Description &&
+                   c.Horsepower == car.Horsepower &&
+                   c.Model == car.Model &&
+                   c.YearOfProduction == car.YearOfProduction) Assert.Pass();
+            }
+
+            Assert.Fail();
         }
 
         [Test]
@@ -70,6 +72,7 @@ namespace CarRentalTests
         {
             var rental = new CarRental.POCO.Rental
             {
+                Id = Guid.NewGuid(),
                 CarId = Guid.NewGuid(),
                 Currency = "USD",
                 Price = 100,
@@ -79,12 +82,14 @@ namespace CarRentalTests
             };
             dbUtils.AddRental(rental);
 
-            dbMock.Rentals.Verify(m => m.Add(It.Is<CarRental.Models.Rental>(arg => arg.CarId == rental.CarId &&
-                                                                                arg.Currency == rental.Currency &&
-                                                                                arg.Price == rental.Price &&
-                                                                                arg.From == rental.From &&
-                                                                                arg.To == rental.To &&
-                                                                                arg.UserId == rental.UserId)));
+            var r = dbUtils.FindRental(rental.Id);
+
+            Assert.True(r.CarId == rental.CarId &&
+                     r.Currency == rental.Currency &&
+                     r.Price == rental.Price &&
+                     r.From == rental.From &&
+                     r.To == rental.To &&
+                     r.UserId == rental.UserId);
         }
 
         [Test]
@@ -99,14 +104,15 @@ namespace CarRentalTests
                 RentDuration = 2,
                 UserId = Guid.NewGuid()
             };
-            dbUtils.AddQuota(quota);
+            CarRental.POCO.Quota r = dbUtils.AddQuota(quota);
 
-            dbMock.Quotas.Verify(m => m.Add(It.Is<CarRental.Models.Quota>(arg => arg.CarId == quota.CarId &&
-                                                                              arg.Currency == quota.Currency &&
-                                                                              arg.ExpiredAt == quota.ExpiredAt &&
-                                                                              arg.Price == quota.Price &&
-                                                                              arg.RentDuration == quota.RentDuration &&
-                                                                              arg.UserId == quota.UserId)));
+            var q = dbUtils.FindQuota(r.Id);
+            Assert.True(q.CarId == quota.CarId &&
+                        q.Currency == quota.Currency &&
+                        q.ExpiredAt == quota.ExpiredAt &&
+                        q.Price == quota.Price &&
+                        q.RentDuration == quota.RentDuration &&
+                        q.UserId == quota.UserId);
         }
     }
 }

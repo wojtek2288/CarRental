@@ -5,21 +5,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CarRental.Services;
-using Moq;
+using Microsoft.EntityFrameworkCore;
+using CarRental.Data;
 
 namespace CarRentalTests
 {
     [TestFixture]
     internal class UsersServiceTests
     {
-        private DbMock dbMock;
         private UsersService usersService;
+        private DbUtils dbUtils;
 
         [SetUp]
         public void Setup()
         {
-            dbMock = new();
-            usersService = new UsersService(dbMock.Context);
+            var options = new DbContextOptionsBuilder<DatabaseContext>().UseInMemoryDatabase(databaseName: "CarRental").Options;
+            var context = new DatabaseContext(options);
+            context.Database.EnsureDeleted();
+            context.Database.EnsureCreated();
+            usersService = new UsersService(context);
+            dbUtils = new DbUtils(context);
         }
 
         [Test]
@@ -32,18 +37,18 @@ namespace CarRentalTests
                 DriversLicenseDate = new DateTime(2018, 4, 5),
                 Email = "randomemail@randomsite.com",
                 Location = "Warsaw",
-                Role = CarRental.POCO.User.UserRole.CLIENT
             };
 
             usersService.Post(user);
 
-            dbMock.Users.Verify(m => m.Add(It.Is<CarRental.Models.User>(arg => arg.AuthID == user.AuthID &&
-                                                                            arg.DateOfBirth == user.DateOfBirth &&
-                                                                            arg.DriversLicenseDate == user.DriversLicenseDate &&
-                                                                            arg.Email == user.Email &&
-                                                                            arg.Location == user.Location &&
-                                                                            arg.Role == CarRental.Models.User.UserRole.CLIENT)), Times.Once);
+            var u = dbUtils.FindUserByAuthID("randomgoogleid");
 
+            Assert.True(u.AuthID == user.AuthID &&
+                        u.DateOfBirth == user.DateOfBirth &&
+                        u.DriversLicenseDate == user.DriversLicenseDate &&
+                        u.Email == user.Email &&
+                        u.Location == user.Location &&
+                        u.Role == CarRental.POCO.User.UserRole.CLIENT);
         }
     }
 }

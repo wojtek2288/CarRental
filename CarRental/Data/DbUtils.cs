@@ -18,6 +18,7 @@ namespace CarRental.Data
         public bool AddUser(POCO.User user)
         {
             if (UserExists(user)) return false;
+            if (user.Id == Guid.Empty) user.Id = Guid.NewGuid();
 
             context.Users.Add(new Models.User()
             {
@@ -62,6 +63,7 @@ namespace CarRental.Data
 
         public bool AddRental(POCO.Rental rental)
         {
+            if (rental.Id == Guid.Empty) rental.Id = new Guid();
             Models.Rental newRental = new Models.Rental()
             {
                 Id = rental.Id,
@@ -75,6 +77,14 @@ namespace CarRental.Data
 
             context.Rentals.Add(newRental);
             return context.SaveChanges() == 1;
+        }
+
+        public IEnumerable<POCO.Rental> GetRentals()
+        {
+            foreach(Models.Rental rental in context.Rentals)
+            {
+                yield return (POCO.Rental)rental;
+            }
         }
 
         public POCO.Rental FindRental(Guid Id)
