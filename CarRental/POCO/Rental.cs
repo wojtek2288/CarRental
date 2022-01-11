@@ -23,7 +23,9 @@ namespace CarRental.POCO
                 From = rental.From,
                 To = rental.To,
                 CarId = rental.CarId,
-                UserId = rental.UserId
+                UserId = rental.UserId,
+                Price = rental.Price,
+                Currency = rental.Currency
             };
         }
     }

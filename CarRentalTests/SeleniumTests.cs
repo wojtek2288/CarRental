@@ -1,3 +1,4 @@
+using CarRental.Data;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -11,9 +12,13 @@ namespace CarRentalTests
     [TestFixture]
     public class Tests
     {
+        DbUtils dbUtils;
         IWebDriver driver;
         string baseUrl;
         int testTimeout = 10;
+
+        string testingAccount = "carrentaldotnettester@gmail.com";
+        string testingPassword = "DobreHaslo123";
 
         [SetUp]
         public void Setup()
@@ -21,6 +26,8 @@ namespace CarRentalTests
             baseUrl = "https://localhost:5001";
 
             driver = new ChromeDriver();
+
+            dbUtils = new("appsettings.json");
         }
 
         [Test]
@@ -52,17 +59,24 @@ namespace CarRentalTests
             driver.SwitchTo().Window(popupWindowHandle);
 
             // Enter login information
-            driver.FindElement(By.XPath("//*[@id=\"identifierId\"]")).SendKeys("carrentaldotnettester@gmail.com");
+            driver.FindElement(By.XPath("//*[@id=\"identifierId\"]")).SendKeys(testingAccount);
             driver.FindElement(By.XPath("//*[@id=\"identifierNext\"]/div/button/span")).Click();
 
             var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(testTimeout));
             wait.Until((driver) =>
             {
-                driver.FindElement(By.XPath("//*[@id=\"password\"]/div[1]/div/div[1]/input"));
+                try
+                {
+                    driver.FindElement(By.XPath("//*[@id=\"password\"]/div[1]/div/div[1]/input")).Click();
+                }
+                catch (ElementNotInteractableException)
+                {
+                    return false;
+                }
                 return true;
             });
 
-            driver.FindElement(By.XPath("//*[@id=\"password\"]/div[1]/div/div[1]/input")).SendKeys("DobreHaslo123");
+            driver.FindElement(By.XPath("//*[@id=\"password\"]/div[1]/div/div[1]/input")).SendKeys(testingPassword);
             driver.FindElement(By.XPath("//*[@id=\"passwordNext\"]/div/button/span")).Click();
 
             driver.SwitchTo().Window(currentHandle);
@@ -96,14 +110,16 @@ namespace CarRentalTests
                 return true;
             });
 
-            Assert.Pass();
+            // Check if user added
+            Assert.True(dbUtils.UserExists(new CarRental.POCO.User { Email = testingAccount }));
         }
 
         [TearDown]
         public void Teardown()
         {
             driver.Quit();
+            CarRental.POCO.User user = dbUtils.FindUserByEmail(testingAccount);
+            if(user != null) dbUtils.RemoveUser(user);
         }
-
     }
 }

@@ -9,10 +9,10 @@ namespace CarRental.Data
         {
         }
 
-        public DbSet<Models.User> Users { get; set; }
-        public DbSet<Models.Car> Cars { get; set; }
-        public DbSet<Models.Rental> Rentals { get; set; }
-        public DbSet<Models.Quota> Quotas { get; set; }
+        public virtual DbSet<Models.User> Users { get; set; }
+        public virtual DbSet<Models.Car> Cars { get; set; }
+        public virtual DbSet<Models.Rental> Rentals { get; set; }
+        public virtual DbSet<Models.Quota> Quotas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -48,8 +48,8 @@ namespace CarRental.Data
                     {
                         Id = Guid.Parse("bbc591e4-eb41-4f8d-a030-1e892393224a"),
                         AuthID = "googleid2",
-                        DateOfBirth = System.DateTime.Today,
-                        DriversLicenseDate = System.DateTime.MinValue,
+                        DateOfBirth = new DateTime(2000, 11, 1),
+                        DriversLicenseDate = new DateTime(2018, 12, 1),
                         Email = "user2@website.com",
                         Location = "Warsaw",
                         Role = Models.User.UserRole.ADMINISTRATOR
@@ -58,8 +58,8 @@ namespace CarRental.Data
                     {
                         Id = Guid.Parse("c72d2e73-93b6-4ddb-bf6e-c778dd425e6b"),
                         AuthID = "googleid",
-                        DateOfBirth = System.DateTime.Today,
-                        DriversLicenseDate = System.DateTime.MinValue,
+                        DateOfBirth = new DateTime(1990, 2, 2),
+                        DriversLicenseDate = new DateTime(2008, 3, 4),
                         Email = "user@website.com",
                         Location = "Warsaw",
                         Role = Models.User.UserRole.CLIENT

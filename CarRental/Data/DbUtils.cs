@@ -18,6 +18,7 @@ namespace CarRental.Data
         public bool AddUser(POCO.User user)
         {
             if (UserExists(user)) return false;
+            if (user.Id == Guid.Empty) user.Id = Guid.NewGuid();
 
             context.Users.Add(new Models.User()
             {
@@ -29,6 +30,19 @@ namespace CarRental.Data
                 Email = user.Email,
                 Role = (Models.User.UserRole)user.Role
             });
+            return context.SaveChanges() == 1;
+        }
+
+        public POCO.User FindUserByEmail(string email)
+        {
+            return (from user in context.Users
+                    where user.Email == email
+                    select (POCO.User)user).FirstOrDefault();
+        }
+
+        public bool RemoveUser(POCO.User user)
+        {
+            context.Remove(context.Users.Single(u => u.Id == user.Id));
             return context.SaveChanges() == 1;
         }
 
@@ -49,6 +63,7 @@ namespace CarRental.Data
 
         public bool AddRental(POCO.Rental rental)
         {
+            if (rental.Id == Guid.Empty) rental.Id = new Guid();
             Models.Rental newRental = new Models.Rental()
             {
                 Id = rental.Id,
@@ -62,6 +77,14 @@ namespace CarRental.Data
 
             context.Rentals.Add(newRental);
             return context.SaveChanges() == 1;
+        }
+
+        public IEnumerable<POCO.Rental> GetRentals()
+        {
+            foreach (Models.Rental rental in context.Rentals)
+            {
+                yield return (POCO.Rental)rental;
+            }
         }
 
         public POCO.Rental FindRental(Guid Id)
@@ -102,11 +125,19 @@ namespace CarRental.Data
 
             if (found == null)
             {
-                foreach(POCO.Car car in APIUtils.GetCars())
+                foreach (POCO.Car car in APIUtils.GetCars())
                 {
                     if (car.Id == id) return car;
                 }
             }
+            return (POCO.Car)found;
+        }
+
+        public POCO.Car FindCarInDatabase(Guid id)
+        {
+            Models.Car found = context.Cars.Find(id);
+
+            if (found == null) return null;
             return (POCO.Car)found;
         }
 
@@ -137,7 +168,7 @@ namespace CarRental.Data
         public POCO.User FindUser(Guid id)
         {
             var found = context.Users.Find(id);
-            if(found == null) return null;
+            if (found == null) return null;
             return (POCO.User)found;
         }
 
@@ -150,7 +181,8 @@ namespace CarRental.Data
 
         public POCO.Quota AddQuota(POCO.Quota quota)
         {
-            var entry = context.Quotas.Add(new Models.Quota()
+            if (quota.Id == Guid.Empty) quota.Id = Guid.NewGuid();
+            context.Quotas.Add(new Models.Quota()
             {
                 Id = quota.Id,
                 Currency = quota.Currency,
@@ -161,7 +193,7 @@ namespace CarRental.Data
                 RentDuration = quota.RentDuration,
             });
             if (context.SaveChanges() != 1) return null;
-            return (POCO.Quota)entry.Entity;
+            return quota;
         }
 
         public DbUtils(DatabaseContext context)
