@@ -90,11 +90,28 @@ namespace CarRental.Services
                     From = startDate,
                     To = startDate.AddDays(quota.RentDuration),
                 };
+
+                if (dbUtils.VerifyRental(rental))
+                {
+                    if (dbUtils.AddRental(rental))
+                    {
+                        new EmailSender(dbUtils).SendRentalEmail(rental);
+                        return;
+                    }
+                    else
+                    {
+                        throw new InternalServerErrorException("Internal Server error");
+                    }
+                }
+                else
+                {
+                    throw new BadRequestException("Rental is not possible");
+                }
             }
             else
             {
                 Guid rentalId = APIUtils.RentCar(startDate, Id);
-                if (rentalId == Guid.Empty) throw new InternalServerErrorException("Internal Server error");
+                if (rentalId == Guid.Empty) throw new InternalServerErrorException("Rental is not possible");
                 rental = new Rental()
                 {
                     Id = rentalId,
@@ -105,10 +122,7 @@ namespace CarRental.Services
                     To = startDate.AddDays(quota.RentDuration),
                     Price = quota.Price
                 };
-            }
 
-            if (dbUtils.VerifyRental(rental))
-            {
                 if (dbUtils.AddRental(rental))
                 {
                     new EmailSender(dbUtils).SendRentalEmail(rental);
@@ -118,10 +132,7 @@ namespace CarRental.Services
                 {
                     throw new InternalServerErrorException("Internal Server error");
                 }
-            }
-            else
-            {
-                throw new BadRequestException("Rental is not possible");
+
             }
         }
 
