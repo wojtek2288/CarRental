@@ -33,7 +33,7 @@ export default function CarTable({ data }) {
                         <td>{car.brand}</td>
                         <td>{car.model}</td>
                         <td>
-                            <Button id="rent_me" onClick={() => {
+                            <Button id="rent-me" onClick={() => {
                                 if (car.id !== clicked.id)
                                     setClicked({ state: true, id: car.id });
                                 else
@@ -43,15 +43,15 @@ export default function CarTable({ data }) {
                             }}
                                 outline color="primary" type="button">See Details
                             </Button>
-                            <div hidden={!clicked.state || car.id != clicked.id}>
+                            <div id='details' hidden={!clicked.state || car.id != clicked.id}>
                                 <b>Horse Power:</b>
                                 <p>{car.horsepower}</p>
                                 <b>Year of Production:</b>
                                 <p>{car.yearOfProduction}</p>
                                 <b>Description:</b>
                                 <p>{car.description}</p>
-                                <Button color='primary' onClick={() => openModal()}>Check Price</Button>
-                                <RentModal modalIsOpen={modalIsOpen} closeModal={closeModal} choosenCar={choosenCar}/>
+                                <Button id='openModal-btn' color='primary' onClick={() => openModal()}>Check Price</Button>
+                                <RentModal id='modal' modalIsOpen={modalIsOpen} closeModal={closeModal} choosenCar={choosenCar}/>
                             </div>
                         </td>
                     </tr>

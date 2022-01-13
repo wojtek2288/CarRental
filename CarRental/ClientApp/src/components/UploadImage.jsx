@@ -37,9 +37,9 @@ const UploadImage = () => {
         }
     }
 
-    const fileDownloadHandler = (fileName) => {
+    const fileDownloadHandler = async (fileName) => {
 
-        fetch('/File/download/' + fileName,{
+        await fetch('/File/download/' + fileName,{
                 responseType: 'blob',
             })
             .then(response => {

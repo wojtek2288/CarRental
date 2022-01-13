@@ -1,7 +1,7 @@
 ﻿import React, { Fragment, useState } from 'react'
 import { Container, Form, FormGroup, Label, Input, Button, Card, CardBody, CardTitle, Alert } from 'reactstrap';
-import axios from 'axios';
 import NavMenu from './NavMenu';
+import { postCar } from '../Utils/utils';
 
 // Route for Car Rental Company Worker only
 
@@ -21,7 +21,7 @@ const AddCar = (props) => {
         description: '',
     });
 
-    const [displayAlert, setDisplayAlert] = useState("none");
+    const [displayAlert, setDisplayAlert] = useState(false);
 
     const { brand, model, yearOfProduction, horsePower, description } = formData;
 
@@ -30,35 +30,20 @@ const AddCar = (props) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     }
 
-
-    const addCar = async () => {
-        console.log(formData);
-        try {
-            const config = {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            }
-
-            const res = await axios.post('/cars', formData, config);
-            console.log(res);
-            setDisplayAlert("success");
-            setTimeout(removeAlert, 3000);
-            setFormData({
-                brand: '',
-                model: '',
-                yearOfProduction: '2021',
-                horsePower: '',
-                description: '',
-            });
-        }
-        catch (err) {
-            console.log(err);
-        }
+    const handleAdding = () => {
+        setDisplayAlert(true);
+        setTimeout(removeAlert, 3000);
+        setFormData({
+            brand: '',
+            model: '',
+            yearOfProduction: '2021',
+            horsePower: '',
+            description: '',
+        });
     }
 
     const removeAlert = () => {
-        setDisplayAlert("none");
+        setDisplayAlert(false);
     }
 
     return (
@@ -66,15 +51,16 @@ const AddCar = (props) => {
             <NavMenu logged={true}/>
             <Container className='margin-top'>
                 <h1 className='form-input'>Add a Car</h1>
-                {displayAlert === "success" ? <Alert className='alert-margin'>Successfully Added Car</Alert> : null}
+                <Alert hidden={!displayAlert} className='alert-margin'>Successfully Added Car</Alert>
                 <Card className='margin-bottom'>
                     <CardBody>
                         <CardTitle tag="h5">
                             Car Details
                         </CardTitle>
-                        <Form onSubmit={(e) => {
+                        <Form onSubmit={async (e) => {
                             e.preventDefault();
-                            addCar();
+                            await postCar(formData);
+                            handleAdding();
                         }}>
                             <FormGroup>
                                 <Label for="brand">

@@ -5,23 +5,24 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace CarRental.Services
 {
     public interface IFileService
     {
-        MemoryStream Download(string FileName);
-        string Post(HttpContext context);
+        Task<MemoryStream> Download(string FileName);
+        Task<string> Post(HttpContext context);
     }
 
     public class FileService : IFileService
     {
-        public MemoryStream Download(string FileName)
+        public async Task<MemoryStream> Download(string FileName)
         {
-            MemoryStream res = AzureFilesPushPull.DownloadFile(FileName);
+            MemoryStream res = await AzureFilesPushPull.DownloadFile(FileName);
             return res;
         }
-        public string Post(HttpContext context)
+        public async Task<string> Post(HttpContext context)
         {
             List<string> extensions = new List<string>() { ".jpg", ".png", ".jpeg", ".pdf" };
             int twoMB = 2 * 1024 * 1024;
@@ -42,7 +43,7 @@ namespace CarRental.Services
             }
             else
             {
-                string fname = AzureFilesPushPull.UploadFile(file.FileName, file.OpenReadStream());
+                string fname = await AzureFilesPushPull.UploadFile(file.FileName, file.OpenReadStream());
                 return fname;
             }
         }

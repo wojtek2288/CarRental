@@ -12,7 +12,7 @@ namespace CarRental.AzureFiles
         private static string containerName = "carrentalservicecontainer";
         private static string connectionString = "DefaultEndpointsProtocol=https;AccountName=carrentalservicestorage;AccountKey=hSRbSQtX9aqi4PBLT48zJNCV51Yl0FFujRwtqKPVDKczyoKkn61UTS0XfKVWuSbBzmIndqbznrrK9E0JYj/4Iw==;EndpointSuffix=core.windows.net";
 
-        public static string UploadFile(string fileName, Stream fileStream)
+        public static async Task<string> UploadFile(string fileName, Stream fileStream)
         {
             string baseName = Path.GetFileNameWithoutExtension(fileName);
             string extension = Path.GetExtension(fileName);
@@ -25,12 +25,12 @@ namespace CarRental.AzureFiles
 
             BlobClient blobClient = containerClient.GetBlobClient(fname);
 
-            blobClient.Upload(fileStream);
+            await blobClient.UploadAsync(fileStream);
 
             return fname;
         }
 
-        public static MemoryStream DownloadFile(string fileName)
+        public static async Task<MemoryStream> DownloadFile(string fileName)
         {
             BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
 
@@ -40,11 +40,11 @@ namespace CarRental.AzureFiles
 
             MemoryStream ms = new MemoryStream();
 
-            blobClient.DownloadTo(ms);
+            await blobClient.DownloadToAsync(ms);
             return ms;
         }
 
-        public static bool DeleteFile(string fileName)
+        public static async Task<bool> DeleteFile(string fileName)
         {
             BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
 
@@ -52,7 +52,8 @@ namespace CarRental.AzureFiles
 
             BlobClient blobClient = containerClient.GetBlobClient(fileName);
 
-            return blobClient.DeleteIfExists();
+            bool delete = await blobClient.DeleteIfExistsAsync();
+            return delete;
         }
     }
 }
