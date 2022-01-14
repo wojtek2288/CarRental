@@ -1,12 +1,11 @@
 ﻿import axios from 'axios';
 
-
 export const postCar = async (formData) => {
     console.log(formData);
     try {
         const config = {
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
         }
 

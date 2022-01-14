@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Route, Switch, Router } from 'react-router-dom';
 import Home from './components/Home';
+import axios from 'axios';
 
 import './custom.css'
 import SignUp from './components/SignUp';
@@ -10,6 +11,8 @@ import ExampleAdmin from './components/ExampleAdmin';
 import ProtectedRoute from './components/Routes/ProtectedRoute';
 import ViewCars from './components/ViewCars';
 import UploadImage from './components/UploadImage';
+
+axios.defaults.headers.common['ApiKey'] = 'VerySecureApiKey';
 
 export default class App extends Component {
     static displayName = App.name;

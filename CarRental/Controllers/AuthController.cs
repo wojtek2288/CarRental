@@ -3,11 +3,13 @@ using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using CarRental.Data;
 using CarRental.Services;
+using CarRental.Attributes;
 
 namespace CarRental.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [ApiKey]
     public class AuthController : ControllerBase
     {
         private IAuthService _authService;

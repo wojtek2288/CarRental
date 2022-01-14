@@ -8,11 +8,13 @@ using CarRental.Data;
 using CarRental.POCO;
 using Microsoft.AspNetCore.Http;
 using CarRental.Services;
+using CarRental.Attributes;
 
 namespace CarRental.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [ApiKey]
     public class UsersController : ControllerBase
     {
         private readonly ILogger<UsersController> _logger;

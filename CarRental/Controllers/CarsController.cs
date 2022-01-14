@@ -13,11 +13,13 @@ using CarRental.Email;
 using Microsoft.AspNetCore.Http;
 using CarRental.AzureFiles;
 using CarRental.Services;
+using CarRental.Attributes;
 
 namespace CarRental.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [ApiKey]
     public class CarsController : ControllerBase
     {
         private readonly ILogger<CarsController> _logger;

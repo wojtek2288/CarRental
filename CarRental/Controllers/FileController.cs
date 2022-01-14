@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 using CarRental.AzureFiles;
 using System.IO;
 using CarRental.Services;
+using CarRental.Attributes;
 
 namespace CarRental.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [ApiKey]
     public class FileController : Controller
     {
         private readonly ILogger<UsersController> _logger;

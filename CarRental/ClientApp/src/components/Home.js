@@ -12,7 +12,7 @@ const Home = (props) => {
         loading: true
     });
 
-    const fetchData = async ()  => {
+    const fetchData = async () => {
         try {
             const config = {
                 headers: {
