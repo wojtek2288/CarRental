@@ -4,15 +4,22 @@ import Modal from 'react-modal';
 import axios from 'axios';
 
 const ReturnForm = (props) => {
+
+    // useEffect(() => {    
+    //     console.log(props.choosenHist);
+    // }, []);
+
     let carstates = ['Good','Average','Bad'];
     const [noteData, setNoteData] = useState({
         odometer: 0,
         description: '',
         carstate: 'Good'
     });
+    const [alertType, setAlertType] = useState('')
+    const [alertText, setAlertText] = useState('');
+    const [displayAlert, setDisplayAlert] = useState(false);
 
     const close = () =>{
-        updateRental();
         props.closeModal();
     }
 
@@ -20,38 +27,55 @@ const ReturnForm = (props) => {
     const [selectedDocument, setSelectedDocument] = useState(null);
     const imageSelectedHandler = (event) => {
         setSelectedImage(event.target.files[0]);
-        console.log(selectedImage);
+        //console.log(selectedImage);
     }
     const documentSelectedHandler = (event) => {
         setSelectedDocument(event.target.files[0]);
-        console.log(selectedDocument);
+        //console.log(selectedDocument);
     }
 
     const updateRental = async () => {
-        console.log(selectedImage);
-        console.log(selectedDocument);
-        console.log(props.choosenHist);
         if (selectedImage!==null && selectedDocument!==null){
+
             const updated = props.choosenHist;
+            updated.returned = true;
             updated.imagename = selectedImage.name;
             updated.documentname = selectedDocument.name;
             updated.note = 'The overall state is ' + noteData.carstate.toLowerCase() + '.\n'
                         + 'The odometer equals '+ noteData.odometer +'.\n' + noteData.description;
-            console.log(updated);
+            
+            props.setChoosenHist(updated);
+            const url = '/rentals/return/' + updated.id;
 
-            try {
-                const config = {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+            if (updated !== undefined && updated.id !== undefined && updated.id!==0) {
+                try {
+                    const config = {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                    const res = await axios.patch(url, updated, config);
+                    //console.log(res);
+                    setDisplayAlert(true);
+                    setTimeout(close, 3000);
+                    props.refresh(true);
+                    setAlertType('success');
+                    setAlertText('Successfully Returned Car');
                 }
-                const url = '/rentals/return/'+updated.Id;
-                console.log(url);
-                const res = await axios.patch(url, updated, config);
-                console.log(res);
+                catch (error) {
+                    console.log(error);
+                    setDisplayAlert(true);
+                    setAlertType('danger');
+                    setAlertText('Cannot return it');
+                }
             }
-            catch (error) { console.log(error); }
+            else {
+                console.log('Zle przekazane choosenHist');
+                console.log(props.choosenHist);
+                
+            }
         }
+        else console.log('Nie zaznaczone pliki');
     }
 
     const imageUploadHandler = async () => {
@@ -60,7 +84,7 @@ const ReturnForm = (props) => {
         try
         {
             const save = await axios.post('/File/save', fd);
-            console.log(save);
+            //console.log(save);
         }
         catch (err) { console.log(err);}
         setSelectedImage(null);
@@ -71,7 +95,7 @@ const ReturnForm = (props) => {
         try
         {
             const save = await axios.post('/File/save', fd);
-            console.log(save);
+            //console.log(save);
         }
         catch (err) { console.log(err);}
         setSelectedDocument(null);
@@ -175,9 +199,10 @@ const ReturnForm = (props) => {
                                 <Button className='btn-text-home' color='success' type="submit">
                                     Return Car
                                 </Button>
-                                
+                                <br/>
                             </CardBody>
                         </Card>
+                        {displayAlert ? <Alert color={alertType}>{alertText}</Alert> : null}
                     </FormGroup>
                 </Form>
             </Modal>

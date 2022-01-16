@@ -3,17 +3,29 @@ import { CardBody, CardTitle, Container, Card, Button } from 'reactstrap';
 import NavMenu from './NavMenu';
 import ReturnForm from './ReturnModal';
 import ReturnData from './Download';
+import axios from 'axios';
 
 const RentedCars = (props) => {
+    
+    const url = props.role === 'User' ? props.url + '/' + localStorage.getItem('googleId') : props.url;
+
     const [data, setData] = useState([]);
     const [clicked, setClicked] = useState({ state: false, id: 0 })
     const [choosenHist, setChoosenHist] = useState({});
     const [modalIsOpen, setIsOpen] = React.useState(false);
+    const [refresh, setRefresh] = useState(false);
 
-    console.log(props);
-    console.log(props.role === 'User' ?  props.url+ '/' + localStorage.getItem('googleId') : props.url);
+    // console.log(props);
+    // console.log(url);
+
+    function fetchData() {
+        fetch(url)
+            .then((response) => response.json())
+            .then((json) => setData(json))
+    }
 
     const openModal = () => {
+        //console.log(choosenHist);
         setIsOpen(true);
     }
 
@@ -22,16 +34,13 @@ const RentedCars = (props) => {
     }
 
     useEffect(() => {
-        const url =  props.role === 'User' ?  props.url+ '/' + localStorage.getItem('googleId') : props.url;
-        fetch(url)
-            .then((response) => response.json())
-            .then((json) => setData(json));
-    }, [])
+        fetchData();
+    }, [refresh])
 
     console.log(data);
 
     const getDate = (hist) => {
-        return new Date(hist.year, hist.month, hist.day);
+        return new Date(hist.year, hist.month-1, hist.day);
     }
 
     return (<Fragment>
@@ -43,6 +52,7 @@ const RentedCars = (props) => {
                     <table id="cars">
                         <thead>
                             <tr>
+                                <th>*Returned</th>
                                 <th>Brand</th>
                                 <th>Model</th>
                                 <th>{props.url === '/rentals/hist' ? "Details" : "Action"}</th>
@@ -51,6 +61,7 @@ const RentedCars = (props) => {
                         <tbody>
                             {data.map(hist =>
                                 <tr key={hist.id}>
+                                    <td>{hist.returned.toString()}</td>
                                     <td>{hist.brand}</td>
                                     <td>{hist.model}</td>
                                     {props.role === 'User' ?
@@ -63,10 +74,12 @@ const RentedCars = (props) => {
                                             }}
                                                 outline color="primary" type="button">See Details
                                             </Button>
+
                                             <div hidden={!clicked.state || hist.id != clicked.id}>
                                                 <b>Company:</b> <p>CarRental</p>
                                                 <b>Return Date:</b> <p>{getDate(hist).toDateString()}</p>
                                             </div>
+
                                             <ReturnData hist={hist} hidden={props.url === '/rentals/curr' || 
                                             !clicked.state || hist.id != clicked.id}></ReturnData>
                                         </td>
@@ -91,7 +104,14 @@ const RentedCars = (props) => {
                                                     setChoosenHist(hist);
                                                 }
                                             }>Return</Button>
-                                            <ReturnForm hidden={props.url === '/rentals/hist'} modalIsOpen={modalIsOpen} closeModal={closeModal} choosenHist={choosenHist} />
+
+                                            <ReturnForm hidden={props.url === '/rentals/hist'}
+                                                modalIsOpen={modalIsOpen}
+                                                closeModal={closeModal}
+                                                choosenHist={choosenHist}
+                                                setChoosenHist={setChoosenHist}
+                                                refresh={setRefresh}
+                                            />
                                         </td>
                                     }
                                 </tr>

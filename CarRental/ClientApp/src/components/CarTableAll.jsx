@@ -19,6 +19,7 @@ const CarTable = (props) => {
 
     const closeModal = () => {
         setIsOpen(false);
+        
     }
 
     return (
@@ -51,6 +52,7 @@ const CarTable = (props) => {
                                                     }}
                                                         outline color="primary" type="button">See Details
                                                     </Button>
+                                                    
                                                     <Button hidden={props.role === 'Admin'}
                                                         onClick={() =>
                                                             {

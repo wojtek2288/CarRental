@@ -61,8 +61,8 @@ namespace CarRental.Services
             var foundUser = (user_id != "" ? dbUtils.FindUserByAuthID(user_id) : null);
             var cars = dbUtils.GetCars();
 
-            var rentals = dbUtils.GetRentals().ToList().Where(r => r.To >= DateTime.Now && r.From <= DateTime.Now && r.Active);
-            if (!now) rentals = dbUtils.GetRentals().ToList();
+            var rentals = dbUtils.GetRentals().ToList().Where(r => /*r.From <= DateTime.Now &&*/ r.Returned==false);
+            if (!now) rentals = dbUtils.GetRentals().ToList().Where(r => /*r.To <= DateTime.Now && */ r.Returned==true);
 
             var query = from car in cars
                         join rental in rentals on car.Id equals rental.CarId
@@ -79,7 +79,6 @@ namespace CarRental.Services
                 hist.id = el.rental.Id;
                 hist.brand = el.car.Brand;
                 hist.model = el.car.Model;
-                hist.note = "A note from Worker";
                 result.Add(hist);
             }
 
@@ -125,11 +124,12 @@ namespace CarRental.Services
             var rental = dbUtils.FindRental(Id);
             
             if (rental == null) throw new BadRequestException("Wrong rental id");
+            if (rental.Returned) throw new BadRequestException("Already returned");
 
             rental.ImageName = image;
             rental.DocumentName = document;
             rental.Note = note;
-            rental.Active = false;
+            rental.Returned = true;
 
             if (!dbUtils.UpdateRental(Id, rental))
             {

@@ -3,7 +3,7 @@ import { CardTitle, Container, FormGroup, Input, Spinner } from 'reactstrap';
 import CarTable from './CarTableAll';
 import NavMenu from './NavMenu';
 
-export default function GroupedCars({ role }) {
+export default function GroupedCars() {
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(true)
     const [brand, setBrand] = useState("")
@@ -143,7 +143,7 @@ export default function GroupedCars({ role }) {
             {loading == true ?
                 (<Spinner className="center" />) :
                 (<Container className='margin-top'>
-                    <CarTable data={customview()} role={role}/>
+                    <CarTable data={customview()} role={localStorage.role}/>
                     {/*{role === 'Admin' ?*/}
                     {/*    <CarTableAdmin data={customview()} /> :*/}
                     {/*    <CarTableUser data={customview()} />}*/}

@@ -10,10 +10,10 @@ import AddCar from './components/AddCar';
 import GroupedCars from './components/GroupedCarsPage';
 
 import ProtectedRoute from './components/Routes/ProtectedRoute';
-import UserRented from './components/UserHist';
-import UserRenting from './components/UserCurr';
-import AllRented from './components/AdminHist';
-import AllRenting from './components/AdminCurr';
+import UserHist from './components/UserHist';
+import UserCurr from './components/UserCurr';
+import AdminHist from './components/AdminHist';
+import AdminCurr from './components/AdminCurr';
 
 export default class App extends Component {
     static displayName = App.name;
@@ -26,11 +26,11 @@ export default class App extends Component {
                 <Route path='/upload' component={UploadImage} />
                 <ProtectedRoute path='/addcar' component={AddCar} role='Admin' />
                 <ProtectedRoute path='/admin' component={GroupedCars} role='Admin' />
-                <ProtectedRoute path='/rentalsadmin' component={AllRenting} role='Admin' />
-                <ProtectedRoute path='/archiveadmin' component={AllRented} role='Admin' />
+                <ProtectedRoute path='/rentalsadmin' component={AdminCurr} role='Admin' />
+                <ProtectedRoute path='/archiveadmin' component={AdminHist} role='Admin' />
                 <ProtectedRoute path='/user' component={GroupedCars} role='User' />
-                <ProtectedRoute path='/rentalsuser' component={UserRenting} role='User' />
-                <ProtectedRoute path='/archiveuser' component={UserRented} role='User' />
+                <ProtectedRoute path='/rentalsuser' component={UserCurr} role='User' />
+                <ProtectedRoute path='/archiveuser' component={UserHist} role='User' />
             </Switch>
         );
     }

@@ -23,7 +23,7 @@ namespace CarRental.Controllers
             public int month { get; set; }
             public int day { get; set; }
 
-            public bool active { get; set; }
+            public bool returned { get; set; }
             public string imagename { get; set; }
             public string documentname { get; set; }
             public string note { get; set; }

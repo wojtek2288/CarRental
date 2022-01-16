@@ -68,17 +68,19 @@ namespace CarRental.Data
         {
             Models.Rental found = context.Rentals.Find(Id);
             Models.Rental updated = found;
-            updated.Active = rental.Active;
+            updated.Returned = rental.Returned;
             updated.ImageName = rental.ImageName;
             updated.DocumentName = rental.DocumentName;
             updated.Note = rental.Note;
 
-            //using (context)
-            //{
-                context.Rentals.Attach(updated);
-                context.Entry(updated).Property(x => x.ImageName).IsModified = true;
-                return context.SaveChanges() == 1;
-            //}
+            context.Rentals.Attach(updated);
+            context.Entry(updated).Property(x => x.ImageName).IsModified = true;
+            return context.SaveChanges() == 1;
+            //context.Entry(found).Property(x => x.Returned).CurrentValue = rental.Returned;
+            //context.Entry(found).Property(x => x.ImageName).CurrentValue = rental.ImageName;
+            //context.Entry(found).Property(x => x.DocumentName).CurrentValue = rental.DocumentName;
+            //context.Entry(found).Property(x => x.Note).CurrentValue = rental.Note;
+            //return context.SaveChanges() == 1;
         }
 
         public POCO.Rental FindRental(Guid Id)
