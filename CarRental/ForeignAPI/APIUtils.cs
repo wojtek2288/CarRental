@@ -13,133 +13,61 @@ namespace CarRental.ForeignAPI
 {
     public class APIUtils
     {
-        private static string AuthorisationString
+        public static List<IAPIUtils> apis;
+
+        static APIUtils()
         {
-            get
+            apis = new()
             {
-                if (authorisationString != null && DateTime.Now < validUntil)
-                {
-                    return authorisationString;
-                }
-
-                UpdateAuthorisationString();
-
-                return authorisationString;
-            }
-        }
-        private static string authorisationString = null;
-        private static DateTime validUntil;
-
-        private static void UpdateAuthorisationString()
-        {
-            RestClient client = new RestClient("https://indentitymanager.snet.com.pl/connect/token");
-
-            RestRequest request = new RestRequest(Method.POST);
-            request.AddParameter("client_id", "team1a");
-            request.AddParameter("client_secret", "e2f50f5c-8511-43b7-8ab9-bcbb631dd4b3");
-            request.AddParameter("scope", "MiNI.RentApp.API");
-            request.AddParameter("grant_type", "client_credentials");
-
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful)
-            {
-                authorisationString = null;
-                validUntil = DateTime.MinValue;
-                return;
-            }
-
-            dynamic body = JsonConvert.DeserializeObject(response.Content);
-
-            authorisationString = $"{body.token_type} {body.access_token}";
-            validUntil = DateTime.Now.AddSeconds((double)body.expires_in);
+                new RentCarAPIUtils(),
+                new OtherCarRentalAPIUtils()
+            };
         }
 
         public static IEnumerable<Car> GetCars()
         {
-            RestClient client = new RestClient("https://mini.rentcar.api.snet.com.pl/vehicles");
-
-            RestRequest request = new RestRequest(Method.GET);
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful) yield break;
-
-            dynamic body = JsonConvert.DeserializeObject(response.Content);
-
-            foreach (dynamic vehicle in body.vehicles)
+            foreach (IAPIUtils api in apis)
             {
-                Car car = new()
+                foreach (Car car in api.GetCars())
                 {
-                    Brand = vehicle.brandName,
-                    Description = vehicle.description,
-                    Horsepower = vehicle.enginePower,
-                    Id = vehicle.id,
-                    Model = vehicle.modelName,
-                    YearOfProduction = vehicle.year
-                };
-
-                yield return car;
+                    yield return car;
+                }
             }
         }
 
         public static Quota GetPrice(Guid carId, User user, TimeSpan rentDuration)
         {
-            RestClient client = new RestClient("https://mini.rentcar.api.snet.com.pl/vehicle/" + carId + "/GetPrice");
-            RestRequest request = new RestRequest(Method.POST);
-            request.AddHeader("Authorization", AuthorisationString);
-
-            DateTime today = DateTime.Now;
-
-            request.AddJsonBody(new
+            foreach (IAPIUtils api in apis)
             {
-                age = today.Year - user.DateOfBirth.Year,
-                yearsOfHavingDriverLicense = today.Year - user.DriversLicenseDate.Year,
-                rentDuration = (int)rentDuration.TotalDays,
-                location = user.Location,
-                currentlyRentedCount = 0,
-                overallRentedCount = 0
-            });
-
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful) return null;
-
-            dynamic body = JsonConvert.DeserializeObject(response.Content);
-            return new Quota()
-            {
-                Price = body.price,
-                Currency = body.currency,
-                Id = body.quotaId,
-                ExpiredAt = body.expiredAt,
-                CarId = carId,
-                UserId = user.Id,
-                RentDuration = (int)rentDuration.TotalDays
-            };
+                foreach (Car car in api.GetCars())
+                {
+                    if (car.Id == carId)
+                    {
+                        return api.GetPrice(carId, user, rentDuration);
+                    }
+                }
+            }
+            return null;
         }
 
         public static Guid RentCar(DateTime startDate, Guid quotaId)
         {
-            RestClient client = new RestClient("https://mini.rentcar.api.snet.com.pl/vehicles/Rent/" + quotaId);
-            RestRequest request = new RestRequest(Method.POST);
-            request.AddHeader("Authorization", AuthorisationString);
-            request.AddJsonBody(new { startDate = startDate });
+            foreach (IAPIUtils api in apis)
+            {
+                Guid result = api.RentCar(startDate, quotaId);
 
-            var response = client.Execute(request);
-            if (!response.IsSuccessful) return Guid.Empty;
-            dynamic body = JsonConvert.DeserializeObject(response.Content);
-
-            return body.rentId;
+                if (result != Guid.Empty) return result;
+            }
+            return Guid.Empty;
         }
 
         public static bool ReturnCar(Guid rentId)
         {
-            RestClient client = new RestClient("https://mini.rentcar.api.snet.com.pl/vehicle/Return/" + rentId);
-            RestRequest request = new RestRequest(Method.POST);
-            request.AddHeader("Authorization", AuthorisationString);
-            
-            var response = client.Execute(request);
-
-            return response.IsSuccessful;
+            foreach (IAPIUtils api in apis)
+            {
+                if (api.ReturnCar(rentId)) return true;
+            }
+            return false;
         }
     }
 }
