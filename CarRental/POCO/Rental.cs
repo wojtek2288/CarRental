@@ -15,6 +15,11 @@ namespace CarRental.POCO
         public Guid CarId { get; set; }
         public Guid UserId { get; set; }
 
+        public bool Returned { get; set; }
+        public string ImageName { get; set; }
+        public string DocumentName { get; set; }
+        public string Note { get; set; }
+
         public static explicit operator Rental(Models.Rental rental)
         {
             return new Rental()
@@ -25,7 +30,11 @@ namespace CarRental.POCO
                 CarId = rental.CarId,
                 UserId = rental.UserId,
                 Price = rental.Price,
-                Currency = rental.Currency
+                Currency = rental.Currency,
+                Returned = rental.Returned,
+                ImageName = rental.ImageName,
+                DocumentName = rental.DocumentName,
+                Note = rental.Note
             };
         }
     }

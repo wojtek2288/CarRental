@@ -13,6 +13,10 @@ namespace CarRental.Models
         public double Price { get; set; }
         public string Currency { get; set; }
         public Guid CarId { get; set; }
-        public Guid UserId { get; set; } 
+        public Guid UserId { get; set; }
+        public bool Returned { get; set; }
+        public string ImageName { get; set; }
+        public string DocumentName { get; set; }
+        public string Note { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink, Button } from 'reactstrap';
+import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink, Button, DropdownToggle, DropdownItem, DropdownMenu, Dropdown } from 'reactstrap';
 import { Link, withRouter } from 'react-router-dom';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import axios from 'axios';
@@ -13,6 +13,7 @@ const NavMenu = (props) => {
         state: '',
         loading: true
     });
+
 
     const fetchData = async () => {
         try {
@@ -32,6 +33,7 @@ const NavMenu = (props) => {
                 state: res.data,
                 loading: false
             });
+            localStorage.setItem('role', res.data);
         }
         catch (error) {
             console.log(error.response);
@@ -41,6 +43,7 @@ const NavMenu = (props) => {
                 setUser({
                     loading: false
                 });
+                localStorage.removeItem('role');
                 localStorage.removeItem('googleId');
                 localStorage.removeItem('tokenId');
                 localStorage.removeItem('accessToken');
@@ -52,9 +55,9 @@ const NavMenu = (props) => {
     useEffect(() => {
         if (user.loading === false) {
             if (user.state === 'User')
-                props.history.push('/exampleuser');
+                props.history.push('/user');
             else if (user.state === 'Admin')
-                props.history.push('/exampleadmin');
+                props.history.push('/admin');
             else if (user.state === 'NotRegistered')
                 props.history.push('/signup');
             else if (user.state === '')
@@ -79,12 +82,16 @@ const NavMenu = (props) => {
 
     const logout = (response) => {
         console.log(response);
+        localStorage.removeItem('role');
         localStorage.removeItem('email');
         localStorage.removeItem('googleId');
         localStorage.removeItem('accessToken');
         localStorage.removeItem('tokenId');
         props.history.push('/');
     }
+
+    const [dropdownOpen, setOpen] = useState(false);
+    const toggle = () => setOpen(!dropdownOpen);
 
     return (
         <header>
@@ -98,16 +105,35 @@ const NavMenu = (props) => {
                                 <Fragment>
                                     {props.logged === true ?
                                         (<Fragment>
-                                            <NavItem className='nav-item'>
-                                                <NavLink tag={Link} className="text-dark" to="/viewcars" >Rent a Car</NavLink>
-                                            </NavItem>
                                             <GoogleLogout
-                                            clientId="626144450964-lgvp421untjh8h698e0pq5cvtpica9me.apps.googleusercontent.com"
-                                            render={renderProps => (
-                                                <Button onClick={renderProps.onClick} disabled={renderProps.disabled} color='primary'> Sign Out </Button>
-                                            )}
-                                            buttonText="Logout"
-                                            onLogoutSuccess={logout}
+                                                clientId="626144450964-lgvp421untjh8h698e0pq5cvtpica9me.apps.googleusercontent.com"
+                                                render={renderProps => (
+                                                    <Dropdown isOpen={dropdownOpen} toggle={toggle}>
+                                                        <DropdownToggle tag="a" className="nav-link" type='button' caret>{localStorage.getItem('email')}</DropdownToggle>
+
+                                                        {localStorage.getItem('role') === 'User' ?
+                                                            (<DropdownMenu>
+                                                                <DropdownItem tag={Link} to={"/user"}> Available Cars </DropdownItem>
+                                                                <DropdownItem tag={Link} to={"/rentalsuser"}> Currently Rented Cars </DropdownItem>
+                                                                <DropdownItem tag={Link} to={"/archiveuser"}> Rented Cars History </DropdownItem>
+                                                                <DropdownItem divider />
+                                                                <DropdownItem onClick={renderProps.onClick} disabled={renderProps.disabled} color='primary'> Sign Out </DropdownItem>
+                                                            </DropdownMenu>)
+                                                            :
+                                                            (<DropdownMenu>
+                                                                <DropdownItem tag={Link} to={"/admin"} >Available Cars</DropdownItem>
+                                                                <DropdownItem tag={Link} to={"/rentalsadmin"}> Currently Rented Cars </DropdownItem>
+                                                                <DropdownItem tag={Link} to={"/archiveadmin"}> Rented Cars History </DropdownItem>
+                                                                <DropdownItem tag={Link} to={"/addcar"}>Add a Car</DropdownItem>
+                                                                <DropdownItem divider />
+                                                                <DropdownItem onClick={renderProps.onClick} disabled={renderProps.disabled} color='primary'>Sign Out</DropdownItem>
+                                                            </DropdownMenu>)
+                                                        }
+                                                    </Dropdown>
+                                                )}
+                                                buttonText="Logout"
+                                                onLogoutSuccess={logout}
+
                                             />
                                         </Fragment>)
                                         :
@@ -119,7 +145,8 @@ const NavMenu = (props) => {
                                             onSuccess={responseGoogleSuccess}
                                             onFailure={responseGoogleFailure}
                                             cookiePolicy={'single_host_origin'}
-                                        />)}
+                                        />)
+                                    }
                                 </Fragment>
                             )}
                         </ul>

@@ -39,7 +39,7 @@ const RentModal = (props) => {
         console.log(formData);
         const authId = localStorage.getItem('googleId');
         const carId = props.choosenCar.id;
-
+        console.log(props.choosenCar);
         console.log(formData);
 
         try {
@@ -142,7 +142,7 @@ const RentModal = (props) => {
                                     required
                                 />
                                 <Label for="to">
-                                    Birth date
+                                    To
                                 </Label>
                                 <Input id="to"
                                     name="to"

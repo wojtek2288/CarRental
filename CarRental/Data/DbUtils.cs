@@ -72,7 +72,11 @@ namespace CarRental.Data
                 Price = rental.Price,
                 Currency = rental.Currency,
                 UserId = rental.UserId,
-                CarId = rental.CarId
+                CarId = rental.CarId,
+                Returned = rental.Returned,
+                ImageName = rental.ImageName,
+                DocumentName = rental.DocumentName,
+                Note = rental.Note
             };
 
             context.Rentals.Add(newRental);
@@ -86,6 +90,19 @@ namespace CarRental.Data
                 yield return (POCO.Rental)rental;
             }
         }
+        
+        public bool UpdateRental(Guid Id, POCO.Rental rental)
+        {
+           var found = context.Rentals.Find(Id);
+            if (found != null)
+            {
+                found.Returned = rental.Returned;
+                found.ImageName = rental.ImageName;
+                found.DocumentName = rental.DocumentName;
+                found.Note = rental.Note;
+            }
+            return context.SaveChanges() == 1;
+        }
 
         public POCO.Rental FindRental(Guid Id)
         {
@@ -98,10 +115,10 @@ namespace CarRental.Data
         {
             var overlappingRentals =
                 from r in context.Rentals
-                where rental.From <= r.To && rental.To >= r.From && rental.CarId == r.CarId
+                where rental.From.Date <= r.To.Date && rental.To.Date >= r.From.Date && rental.CarId == r.CarId
                 select r;
 
-            if (overlappingRentals.Any() || rental.From < DateTime.Now || rental.From > rental.To)
+            if (overlappingRentals.Any() || rental.From.Date < DateTime.Now.Date || rental.From.Date > rental.To.Date)
                 return false;
             else
                 return true;
@@ -116,6 +133,14 @@ namespace CarRental.Data
             foreach (POCO.Car car in APIUtils.GetCars())
             {
                 yield return car;
+            }
+        }
+
+        public IEnumerable<POCO.Rental> GetRentals()
+        {
+            foreach (Models.Rental rental in context.Rentals)
+            {
+                yield return (POCO.Rental)rental;
             }
         }
 

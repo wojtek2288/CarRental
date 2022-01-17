@@ -32,6 +32,7 @@ namespace CarRental
             services.AddScoped<ICarsService, CarsService>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IUsersService, UsersService>();
+            services.AddScoped<IRentalsService, RentalsService>();
             services.AddScoped<ErrorHandlingMiddleware>();
 
             services.AddControllersWithViews();
@@ -76,10 +77,11 @@ namespace CarRental
             }
 
             app.UseMiddleware<ErrorHandlingMiddleware>();
+            
             app.UseHttpsRedirection();
-
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
+
             app.UseRouting();
             app.UseAuthentication();
 
