@@ -18,9 +18,15 @@ const RentedCars = (props) => {
 
     function fetchData() {
 
-        fetch(url)
-            .then((response) => response.json())
-            .then((json) => setData(json))
+        fetch(url,
+        {
+            headers:
+            {
+                'ApiKey': axios.defaults.headers.common['ApiKey']
+            }
+        })
+        .then((response) => response.json())
+        .then((json) => setData(json))
     }
 
     const openModal = () => {

@@ -1,6 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import { Button } from "reactstrap";
+import axios from 'axios';
 
 const ReturnData = (props) =>{
     useEffect(() => {
@@ -17,7 +18,10 @@ const ReturnData = (props) =>{
     const fileDownloadHandler = (fileName) => {
         if (fileName !== null && fileName !== '' && fileName !== undefined) {
             fetch('/File/download/' + fileName, {
-                responseType: 'blob'
+                responseType: 'blob',
+                headers: {
+                    'ApiKey': axios.defaults.headers.common['ApiKey']
+                }
             })
             .then(response => {
                 if (response.ok) {

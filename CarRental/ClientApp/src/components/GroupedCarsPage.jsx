@@ -2,6 +2,7 @@
 import { CardTitle, Container, FormGroup, Input, Spinner } from 'reactstrap';
 import CarTable from './CarTableAll';
 import NavMenu from './NavMenu';
+import axios from 'axios';
 
 export default function GroupedCars() {
     const [data, setData] = useState([])
@@ -11,10 +12,14 @@ export default function GroupedCars() {
     const [sortColumn, setSortColumn] = useState("")
 
     useEffect(() => {
-        fetch('cars')
-            .then((response) => response.json())
-            .then((json) => setData(json))
-            .then(() => setLoading(false));
+        fetch('cars', {
+            headers: {
+                'ApiKey': axios.defaults.headers.common['ApiKey']
+            }
+        })
+        .then((response) => response.json())
+        .then((json) => setData(json))
+        .then(() => setLoading(false));
     }, [])
 
     function getbm(data) {
