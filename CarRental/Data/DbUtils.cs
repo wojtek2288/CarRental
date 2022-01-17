@@ -136,14 +136,6 @@ namespace CarRental.Data
             }
         }
 
-        public IEnumerable<POCO.Rental> GetRentals()
-        {
-            foreach (Models.Rental rental in context.Rentals)
-            {
-                yield return (POCO.Rental)rental;
-            }
-        }
-
         public POCO.Car FindCar(Guid id)
         {
             Models.Car found = context.Cars.Find(id);
