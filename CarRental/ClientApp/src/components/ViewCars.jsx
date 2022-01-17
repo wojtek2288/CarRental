@@ -2,6 +2,7 @@
 import { CardTitle, Container, FormGroup, Input, Spinner } from 'reactstrap';
 import CarTable from './CarTable'
 import NavMenu from './NavMenu';
+import axios from 'axios';
 
 export default function ViewCars() {
     const [data, setData] = useState([])
@@ -11,7 +12,11 @@ export default function ViewCars() {
     const [sortColumn, setSortColumn] = useState("")
 
     useEffect(() => {
-        fetch('cars')
+        fetch('cars', {
+            headers: {
+                'ApiKey': axios.defaults.headers.common['ApiKey']
+            }
+        })
             .then((response) => response.json())
             .then((json) => setData(json))
             .then(() => setLoading(false));

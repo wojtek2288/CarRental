@@ -40,7 +40,7 @@ namespace CarRentalTests
                 Email = "randomemail@randomsite.com",
                 Location = "Warsaw"
             };
-            Assert.IsInstanceOf<OkResult>(controller.Post(user));
+            Assert.IsInstanceOf<OkObjectResult>(controller.Post(user));
 
             var u = dbUtils.FindUserByAuthID("randomgoogleid");
 

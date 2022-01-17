@@ -21,13 +21,13 @@ namespace CarRentalTests
         }
 
         [Test]
-        public void UploadDownloadFileTest()
+        public async Task UploadDownloadFileTest()
         {
             byte[] data = new byte[] { 48, 49, 50, 51, 52, 53, 54, 55 };
             MemoryStream memoryStream = new(data);
-            file = AzureFilesPushPull.UploadFile("test_file.txt", memoryStream);
+            file = await AzureFilesPushPull.UploadFile("test_file.txt", memoryStream);
 
-            memoryStream = AzureFilesPushPull.DownloadFile(file);
+            memoryStream = await AzureFilesPushPull.DownloadFile(file);
 
             byte[] buffer = memoryStream.GetBuffer();
 
@@ -38,9 +38,9 @@ namespace CarRentalTests
         }
 
         [TearDown]
-        public void Teardown()
+        public async Task Teardown()
         {
-            AzureFilesPushPull.DeleteFile(file);
+            await AzureFilesPushPull.DeleteFile(file);
         }
     }
 }

@@ -17,7 +17,7 @@ const ProtectedRoute = ({ component: Component, role, ...rest }) => {
                     headers: {
                         'Content-Type': 'application/json',
                         'AuthID': localStorage.getItem('googleId'),
-                        'TokenID': localStorage.getItem('tokenId')
+                        'TokenID': localStorage.getItem('tokenId'),
                     },
                 }
 

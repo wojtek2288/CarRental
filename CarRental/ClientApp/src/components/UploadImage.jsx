@@ -37,11 +37,14 @@ const UploadImage = () => {
         }
     }
 
-    const fileDownloadHandler = (fileName) => {
+    const fileDownloadHandler = async (fileName) => {
 
-        fetch('/File/download/' + fileName,{
+        await fetch('/File/download/' + fileName,{
                 responseType: 'blob',
-            })
+                headers: {
+                    'ApiKey': axios.defaults.headers.common['ApiKey']
+                    }
+                })
             .then(response => {
                 if (response.ok) {
                     return response.blob();

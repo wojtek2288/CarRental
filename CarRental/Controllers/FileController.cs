@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 using CarRental.AzureFiles;
 using System.IO;
 using CarRental.Services;
+using CarRental.Attributes;
 
 namespace CarRental.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [ApiKey]
     public class FileController : Controller
     {
         private readonly ILogger<UsersController> _logger;
@@ -33,9 +35,9 @@ namespace CarRental.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public ActionResult Post()
+        public async Task<ActionResult> Post()
         {
-            string fname = _fileService.Post(HttpContext);
+            string fname = await _fileService.Post(HttpContext);
             return Ok(fname);
         }
 
@@ -45,9 +47,9 @@ namespace CarRental.Controllers
         /// <response code="200">Success</response>
         [HttpGet("download/{FileName}")]
         [ProducesResponseType(200)]
-        public ActionResult Download([FromRoute]string FileName)
+        public async Task<ActionResult> Download([FromRoute]string FileName)
         {
-            MemoryStream ms = _fileService.Download(FileName);
+            MemoryStream ms = await _fileService.Download(FileName);
             return File(ms.GetBuffer(), "application/octet-stream", FileName);
         }
     }
