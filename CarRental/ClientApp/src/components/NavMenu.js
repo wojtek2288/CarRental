@@ -115,7 +115,7 @@ const NavMenu = (props) => {
                                                             (<DropdownMenu>
                                                                 <DropdownItem tag={Link} to={"/user"}> Available Cars </DropdownItem>
                                                                 <DropdownItem tag={Link} to={"/rentalsuser"}> Currently Rented Cars </DropdownItem>
-                                                                <DropdownItem tag={Link} to={"/archiveuser"}> All Rented Cars </DropdownItem>
+                                                                <DropdownItem tag={Link} to={"/archiveuser"}> Rented Cars History </DropdownItem>
                                                                 <DropdownItem divider />
                                                                 <DropdownItem onClick={renderProps.onClick} disabled={renderProps.disabled} color='primary'> Sign Out </DropdownItem>
                                                             </DropdownMenu>)
@@ -123,7 +123,7 @@ const NavMenu = (props) => {
                                                             (<DropdownMenu>
                                                                 <DropdownItem tag={Link} to={"/admin"} >Available Cars</DropdownItem>
                                                                 <DropdownItem tag={Link} to={"/rentalsadmin"}> Currently Rented Cars </DropdownItem>
-                                                                <DropdownItem tag={Link} to={"/archiveadmin"}> All Rented Cars </DropdownItem>
+                                                                <DropdownItem tag={Link} to={"/archiveadmin"}> Rented Cars History </DropdownItem>
                                                                 <DropdownItem tag={Link} to={"/addcar"}>Add a Car</DropdownItem>
                                                                 <DropdownItem divider />
                                                                 <DropdownItem onClick={renderProps.onClick} disabled={renderProps.disabled} color='primary'>Sign Out</DropdownItem>

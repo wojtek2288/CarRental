@@ -57,7 +57,11 @@ namespace CarRental.Data
                 Price = rental.Price,
                 Currency = rental.Currency,
                 UserId = rental.UserId,
-                CarId = rental.CarId
+                CarId = rental.CarId,
+                Returned = rental.Returned,
+                ImageName = rental.ImageName,
+                DocumentName = rental.DocumentName,
+                Note = rental.Note
             };
 
             context.Rentals.Add(newRental);
@@ -66,21 +70,15 @@ namespace CarRental.Data
 
         public bool UpdateRental(Guid Id, POCO.Rental rental)
         {
-            Models.Rental found = context.Rentals.Find(Id);
-            Models.Rental updated = found;
-            updated.Returned = rental.Returned;
-            updated.ImageName = rental.ImageName;
-            updated.DocumentName = rental.DocumentName;
-            updated.Note = rental.Note;
-
-            context.Rentals.Attach(updated);
-            context.Entry(updated).Property(x => x.ImageName).IsModified = true;
+           var found = context.Rentals.Find(Id);
+            if (found != null)
+            {
+                found.Returned = rental.Returned;
+                found.ImageName = rental.ImageName;
+                found.DocumentName = rental.DocumentName;
+                found.Note = rental.Note;
+            }
             return context.SaveChanges() == 1;
-            //context.Entry(found).Property(x => x.Returned).CurrentValue = rental.Returned;
-            //context.Entry(found).Property(x => x.ImageName).CurrentValue = rental.ImageName;
-            //context.Entry(found).Property(x => x.DocumentName).CurrentValue = rental.DocumentName;
-            //context.Entry(found).Property(x => x.Note).CurrentValue = rental.Note;
-            //return context.SaveChanges() == 1;
         }
 
         public POCO.Rental FindRental(Guid Id)
@@ -101,15 +99,6 @@ namespace CarRental.Data
                 return false;
             else
                 return true;
-        }
-
-        public bool VerifyReturn(POCO.Rental rental)
-        {
-            // zwrot musi
-            // (+) być tego dnia co rental.To
-            // (T) musi być oznaczony jako nieoddany jeszcze
-            // (T) plików ma jeszcze nie być w AzureBlob(?)
-            return true;
         }
 
         public IEnumerable<POCO.Car> GetCars()

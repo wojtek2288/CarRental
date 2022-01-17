@@ -1,7 +1,8 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { CardBody, CardTitle, Container, Card, Button } from 'reactstrap';
 import NavMenu from './NavMenu';
-import ReturnForm from './ReturnModal';
+//import ReturnForm from './ReturnModal';
+import ReturnForm from './ReturnModal copy';
 import ReturnData from './Download';
 import axios from 'axios';
 
@@ -15,17 +16,14 @@ const RentedCars = (props) => {
     const [modalIsOpen, setIsOpen] = React.useState(false);
     const [refresh, setRefresh] = useState(false);
 
-    // console.log(props);
-    // console.log(url);
-
     function fetchData() {
+
         fetch(url)
             .then((response) => response.json())
             .then((json) => setData(json))
     }
 
     const openModal = () => {
-        //console.log(choosenHist);
         setIsOpen(true);
     }
 
@@ -43,6 +41,8 @@ const RentedCars = (props) => {
         return new Date(hist.year, hist.month-1, hist.day);
     }
 
+    const today = new Date();
+
     return (<Fragment>
         <NavMenu logged={true} />
         <Container className='margin-top'>
@@ -52,7 +52,6 @@ const RentedCars = (props) => {
                     <table id="cars">
                         <thead>
                             <tr>
-                                <th>*Returned</th>
                                 <th>Brand</th>
                                 <th>Model</th>
                                 <th>{props.url === '/rentals/hist' ? "Details" : "Action"}</th>
@@ -61,7 +60,6 @@ const RentedCars = (props) => {
                         <tbody>
                             {data.map(hist =>
                                 <tr key={hist.id}>
-                                    <td>{hist.returned.toString()}</td>
                                     <td>{hist.brand}</td>
                                     <td>{hist.model}</td>
                                     {props.role === 'User' ?
@@ -80,8 +78,15 @@ const RentedCars = (props) => {
                                                 <b>Return Date:</b> <p>{getDate(hist).toDateString()}</p>
                                             </div>
 
-                                            <ReturnData hist={hist} hidden={props.url === '/rentals/curr' || 
-                                            !clicked.state || hist.id != clicked.id}></ReturnData>
+                                            <ReturnData
+                                            refresh={setRefresh}
+                                                hist={hist}
+                                                hidden={
+                                                    props.url === '/rentals/curr' ||
+                                                    !clicked.state || hist.id != clicked.id
+                                                }
+                                            >
+                                            </ReturnData>
                                         </td>
                                         :
                                         <td>
@@ -98,7 +103,9 @@ const RentedCars = (props) => {
                                                 <b>Return Date:</b> <p>{getDate(hist).toDateString()}</p>
                                             </div>
 
-                                            <Button hidden={props.url === '/rentals/hist'} color='primary' onClick={() =>
+                                            <Button hidden={props.url === '/rentals/hist'} color='primary'
+                                                
+                                                onClick={() =>
                                                 {
                                                     openModal();
                                                     setChoosenHist(hist);
@@ -125,3 +132,4 @@ const RentedCars = (props) => {
 }
 
 export default RentedCars;
+/*disabled={today.getDate() !== hist.day || today.getDate()+1 !== hist.month || today.getYear() !== hist.year}*/ 

@@ -29,18 +29,27 @@ const ReturnForm = (props) => {
         setSelectedDocument(event.target.files[0]);
     }
 
-    const updateRental = async () => {
-        if (selectedImage !== null && selectedDocument !== null) {
+    const [readyImage,setReadyImage] = useState(false);
+    const [readyDocument,setReadyDocument] = useState(false);
 
+    const updateRental = async () => {
+        // if (selectedImage !== null && selectedDocument !== null) {
+        if (readyImage && readyDocument) {
             const updated = props.choosenHist;
+            
+            console.log(selectedImage.data)
+            console.log(selectedDocument.data)
+
             updated.returned = true;
-            updated.imagename = selectedImage.name;
-            updated.documentname = selectedDocument.name;
+            updated.imagename = selectedImage.data;
+            updated.documentname = selectedDocument.data;
             updated.note = 'The overall state is ' + noteData.carstate.toLowerCase() + '.\n'
                 + 'The odometer equals ' + noteData.odometer + '.\n' + noteData.description;
 
             props.setChoosenHist(updated);
             const url = '/rentals/return/' + updated.id;
+
+            console.log(updated);
 
             if (updated !== undefined && updated.id !== undefined && updated.id !== 0) {
                 try {
@@ -63,29 +72,39 @@ const ReturnForm = (props) => {
                 }
             }
         }
+        else{ 
+            setDisplayAlert(true);
+            setAlertType('danger');
+            setAlertText('No Files Uploaded');
+        }
     }
 
     const imageUploadHandler = async () => {
-        const fd = new FormData();
-        fd.append('image', selectedImage, selectedImage.name);
-        try
-        {
-            const save = await axios.post('/File/save', fd);
-            //setSelectedImage(save);
+        if (selectedImage!==null && selectedImage!==undefined){
+            const fd = new FormData();
+            fd.append('image', selectedImage, selectedImage.name);
+            try
+            {
+                const save = await axios.post('/File/save', fd);
+                setSelectedImage(save);
+                setReadyImage(true);
+            }
+            catch (err) { console.log(err);}
         }
-        catch (err) { console.log(err);}
-        setSelectedImage(null);
     }
     const documentUploadHandler = async () => {
-        const fd = new FormData();
-        fd.append('document', selectedDocument, selectedDocument.name);
-        try
-        {
-            const save = await axios.post('/File/save', fd);
-            //setSelectedDocument(save);
+        if (selectedDocument!==null && selectedDocument!==undefined)
+        {    
+            const fd = new FormData();
+            fd.append('document', selectedDocument, selectedDocument.name);
+            try
+            {
+                const save = await axios.post('/File/save', fd);
+                setSelectedDocument(save);
+                setReadyDocument(true);
+            }
+            catch (err) { console.log(err);}
         }
-        catch (err) { console.log(err);}
-        setSelectedDocument(null);
     }
 
     const onChange = (e) => {
@@ -169,7 +188,7 @@ const ReturnForm = (props) => {
                                     onChange={imageSelectedHandler} 
                                     accept="image/*"
                                 />
-                                <button hidden={selectedImage===null} type='button' onClick={imageUploadHandler}>Upload</button>
+                                <button hidden={selectedImage===null || readyImage} type='button' onClick={imageUploadHandler}>Upload</button>
                                 <br/>
                                 <Label for="descr">
                                     Document
@@ -181,7 +200,7 @@ const ReturnForm = (props) => {
                                     onChange={documentSelectedHandler}
                                     accept="document/*"
                                 />
-                                <button hidden={selectedDocument===null} type='button' onClick={documentUploadHandler}>Upload</button>
+                                <button hidden={selectedDocument===null || readyDocument} type='button' onClick={documentUploadHandler}>Upload</button>
                                 <br/>
                                 <Button className='btn-text-home' color='success' type="submit">
                                     Return Car
