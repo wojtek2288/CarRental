@@ -149,9 +149,6 @@ export default function GroupedCars() {
                 (<Spinner className="center" />) :
                 (<Container className='margin-top'>
                     <CarTable data={customview()} role={localStorage.role}/>
-                    {/*{role === 'Admin' ?*/}
-                    {/*    <CarTableAdmin data={customview()} /> :*/}
-                    {/*    <CarTableUser data={customview()} />}*/}
                 </Container>)}
         </Fragment>
     );

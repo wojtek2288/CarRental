@@ -15,9 +15,9 @@ const ReturnData = (props) =>{
     console.log(imageName);
     console.log(documentName);
 
-    const fileDownloadHandler = (fileName) => {
+    const fileDownloadHandler = async (fileName) => {
         if (fileName !== null && fileName !== '' && fileName !== undefined) {
-            fetch('/File/download/' + fileName, {
+            await fetch('/File/download/' + fileName, {
                 responseType: 'blob',
                 headers: {
                     'ApiKey': axios.defaults.headers.common['ApiKey']

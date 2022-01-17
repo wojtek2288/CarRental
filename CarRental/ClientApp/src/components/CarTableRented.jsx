@@ -1,13 +1,11 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { CardBody, CardTitle, Container, Card, Button } from 'reactstrap';
 import NavMenu from './NavMenu';
-//import ReturnForm from './ReturnModal';
-import ReturnForm from './ReturnModal copy';
+import ReturnForm from './ReturnModal';
 import ReturnData from './Download';
 import axios from 'axios';
 
 const RentedCars = (props) => {
-    
     const url = props.role === 'User' ? props.url + '/' + localStorage.getItem('googleId') : props.url;
 
     const [data, setData] = useState([]);
@@ -138,4 +136,3 @@ const RentedCars = (props) => {
 }
 
 export default RentedCars;
-/*disabled={today.getDate() !== hist.day || today.getDate()+1 !== hist.month || today.getYear() !== hist.year}*/ 
