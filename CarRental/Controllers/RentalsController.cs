@@ -22,6 +22,8 @@ namespace CarRental.Controllers
             public int year { get; set; }
             public int month { get; set; }
             public int day { get; set; }
+            public DateTime from { get; set; }
+            public string userEmail { get; set; }
 
             public bool returned { get; set; }
             public string imagename { get; set; }

@@ -102,7 +102,7 @@ export default function GroupedCars() {
         }, {});
     };
 
-    const sortable = ['', 'Company', 'Brand', 'Model'];
+    const sortable = ['Company', 'Brand', 'Model'];
 
     return (
         <Fragment>
@@ -139,6 +139,7 @@ export default function GroupedCars() {
                             type="select"
                             value={sortColumn}
                             onChange={(e) => setSortColumn(e.target.value)}>
+                            <option value="" disabled selected hidden>Sort By</option>
                             {sortable.map((column, key) =>
                                 <option key={key}>{column}</option>)}
                         </Input>

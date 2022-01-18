@@ -45,6 +45,10 @@ const RentedCars = (props) => {
         return new Date(hist.year, hist.month-1, hist.day);
     }
 
+    const parseDate = (dateString) => {
+        return new Date(Date.parse(dateString));
+    }
+
     const today = new Date();
 
     return (<Fragment>
@@ -58,6 +62,7 @@ const RentedCars = (props) => {
                             <tr>
                                 <th>Brand</th>
                                 <th>Model</th>
+                                <th>User Email</th>
                                 <th>{props.url === '/rentals/hist' ? "Details" : "Action"}</th>
                             </tr>
                         </thead>
@@ -66,6 +71,7 @@ const RentedCars = (props) => {
                                 <tr key={hist.id}>
                                     <td>{hist.brand}</td>
                                     <td>{hist.model}</td>
+                                    <td>{hist.userEmail}</td>
                                     {props.role === 'User' ?
                                         <td>
                                             <Button id="rent_me" onClick={() => {
@@ -79,6 +85,7 @@ const RentedCars = (props) => {
 
                                             <div hidden={!clicked.state || hist.id != clicked.id}>
                                                 <b>Company:</b> <p>CarRental</p>
+                                                <b>From:</b> <p>{parseDate(hist.from).toDateString()}</p>
                                                 <b>Return Date:</b> <p>{getDate(hist).toDateString()}</p>
                                             </div>
 
@@ -104,10 +111,11 @@ const RentedCars = (props) => {
                                             </Button>
                                             <div hidden={!clicked.state || hist.id != clicked.id}>
                                                 <b>Company:</b> <p>CarRental</p>
+                                                <b>From:</b> <p>{parseDate(hist.from).toDateString()}</p>
                                                 <b>Return Date:</b> <p>{getDate(hist).toDateString()}</p>
                                             </div>
 
-                                            <Button hidden={props.url === '/rentals/hist'} color='primary'
+                                            <Button hidden={props.url === '/rentals/hist'} color='primary' className='margin-left'
                                                 
                                                 onClick={() =>
                                                 {

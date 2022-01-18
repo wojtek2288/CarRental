@@ -63,6 +63,10 @@ code {
     width: 150px;
 }
 
+.margin-left{
+    margin-left: 1rem;
+}
+
 .center {
     position: absolute;
     left: 50%;
