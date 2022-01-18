@@ -10,7 +10,7 @@ using System.Threading;
 namespace CarRentalTests
 {
     [TestFixture]
-    public class Tests
+    public class SeleniumTests
     {
         DbUtils dbUtils;
         IWebDriver driver;
@@ -98,9 +98,6 @@ namespace CarRentalTests
             driver.FindElement(By.Id("birthday")).SendKeys("03042000");
             driver.FindElement(By.Id("location")).SendKeys("Warsaw");
             driver.FindElement(By.XPath("//*[@id=\"root\"]/div/form/div/div/div/button")).Click();
-
-            // Go to viewcars
-            driver.Navigate().GoToUrl(baseUrl + "/viewcars");
 
             // Check if list visible
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(testTimeout));
