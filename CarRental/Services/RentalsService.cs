@@ -61,7 +61,7 @@ namespace CarRental.Services
             var foundUser = (user_id != "" ? dbUtils.FindUserByAuthID(user_id) : null);
             var cars = dbUtils.GetCars();
 
-            var rentals = dbUtils.GetRentals().ToList().Where(r => r.From <= DateTime.Now && r.Returned==false);
+            var rentals = dbUtils.GetRentals().ToList().Where(r => r.Returned==false);
             if (!now) rentals = dbUtils.GetRentals().ToList().Where(r => r.Returned);
 
             var query = from car in cars
@@ -83,6 +83,8 @@ namespace CarRental.Services
                 hist.imagename = el.rental.ImageName;
                 hist.documentname = el.rental.DocumentName;
                 hist.note = el.rental.Note;
+                hist.from = el.rental.From;
+                hist.userEmail = dbUtils.FindUser(el.rental.UserId).Email;
                 result.Add(hist);
             }
 

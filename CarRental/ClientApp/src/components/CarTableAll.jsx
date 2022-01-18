@@ -52,8 +52,8 @@ const CarTable = (props) => {
                                                     }}
                                                         outline color="primary" type="button">See Details
                                                     </Button>
-                                                    
-                                                    <Button hidden={props.role === 'Admin'}
+
+                                                    <Button hidden={props.role === 'Admin'} className='margin-left'
                                                         onClick={() =>
                                                             {
                                                                 openModal();
