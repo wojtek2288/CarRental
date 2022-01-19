@@ -55,7 +55,6 @@ namespace CarRental.Services
                 day = date.Day
             };
         }
-
         public IEnumerable<RentalsController.DetailedRental> FilteredDisp(bool now, string user_id)
         {
             var foundUser = (user_id != "" ? dbUtils.FindUserByAuthID(user_id) : null);
@@ -85,6 +84,7 @@ namespace CarRental.Services
                 hist.note = el.rental.Note;
                 hist.from = el.rental.From;
                 hist.userEmail = dbUtils.FindUser(el.rental.UserId).Email;
+                hist.company = dbUtils.FindCar(el.car.Id).Company;
                 result.Add(hist);
             }
 

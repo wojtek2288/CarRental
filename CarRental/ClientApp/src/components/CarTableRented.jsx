@@ -84,7 +84,7 @@ const RentedCars = (props) => {
                                             </Button>
 
                                             <div hidden={!clicked.state || hist.id != clicked.id}>
-                                                <b>Company:</b> <p>CarRental</p>
+                                                <b>Company:</b> <p>{hist.company}</p>
                                                 <b>From:</b> <p>{parseDate(hist.from).toDateString()}</p>
                                                 <b>Return Date:</b> <p>{getDate(hist).toDateString()}</p>
                                             </div>
@@ -110,7 +110,7 @@ const RentedCars = (props) => {
                                                 outline color="primary" type="button">See Details
                                             </Button>
                                             <div hidden={!clicked.state || hist.id != clicked.id}>
-                                                <b>Company:</b> <p>CarRental</p>
+                                                <b>Company:</b> <p>{hist.company}</p>
                                                 <b>From:</b> <p>{parseDate(hist.from).toDateString()}</p>
                                                 <b>Return Date:</b> <p>{getDate(hist).toDateString()}</p>
                                             </div>

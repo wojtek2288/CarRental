@@ -42,7 +42,7 @@ const CarTable = (props) => {
                                     <tbody>
                                         {group.map(car =>
                                             <tr key={car.id}>
-                                                <td>CarRental</td>
+                                                <td>{car.company}</td>
                                                 <td>
                                                     <Button id="rent_me" onClick={() => {
                                                         if (car.id !== clicked.id)
