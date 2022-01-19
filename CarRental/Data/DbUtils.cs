@@ -134,7 +134,6 @@ namespace CarRental.Data
             }
             foreach (POCO.Car car in APIUtils.GetCars())
             {
-                car.Company = "Team B";
                 yield return car;
             }
         }
@@ -149,7 +148,6 @@ namespace CarRental.Data
                 {
                     if (car.Id == id)
                     {
-                        car.Company = "Team B";
                         return car;
                     }
                 }

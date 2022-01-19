@@ -8,6 +8,7 @@ namespace CarRental.ForeignAPI
 {
     public class RentCarAPIUtils : IAPIUtils
     {
+        public string CompanyName { get => "Team B";}
         private string AuthorisationString
         {
             get
@@ -22,6 +23,7 @@ namespace CarRental.ForeignAPI
                 return authorisationString;
             }
         }
+
         private string authorisationString = null;
         private DateTime validUntil;
 

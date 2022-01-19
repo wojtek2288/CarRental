@@ -30,6 +30,7 @@ namespace CarRental.ForeignAPI
             {
                 foreach (Car car in api.GetCars())
                 {
+                    car.Company = api.CompanyName;
                     yield return car;
                 }
             }
