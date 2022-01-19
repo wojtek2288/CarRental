@@ -8,6 +8,7 @@ namespace CarRental.ForeignAPI
 {
     public class OtherCarRentalAPIUtils : IAPIUtils
     {
+        public string CompanyName { get => "Team C"; }
         private static Guid IntToGuid(int id)
         {
             byte[] bytes = new byte[16];
