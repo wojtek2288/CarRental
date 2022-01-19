@@ -5,12 +5,14 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
+using OpenQA.Selenium.Interactions;
 
 namespace CarRentalTests
 {
     [TestFixture]
-    public class Tests
+    public class SeleniumTests
     {
         DbUtils dbUtils;
         IWebDriver driver;
@@ -20,6 +22,8 @@ namespace CarRentalTests
         string testingAccount = "carrentaldotnettester@gmail.com";
         string testingPassword = "DobreHaslo123";
 
+        private CarRental.POCO.Car testCar;
+
         [SetUp]
         public void Setup()
         {
@@ -28,6 +32,18 @@ namespace CarRentalTests
             driver = new ChromeDriver();
 
             dbUtils = new("appsettings.json");
+
+            string modelName = "TestModel123";
+            testCar = new CarRental.POCO.Car()
+            {
+                Model = modelName,
+                Brand = "TestBrand",
+                Description = "",
+                Horsepower = 100,
+                YearOfProduction = 2000,
+                Id = Guid.NewGuid()
+            };
+            dbUtils.AddCar(testCar);
         }
 
         [Test]
@@ -45,8 +61,17 @@ namespace CarRentalTests
             }
         }
 
-        [Test]
-        public void SeleniumTestRegister()
+        private void WaitForXPath(string xpath)
+        {
+            var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(testTimeout));
+            wait.Until((driver) =>
+            {
+                var element = driver.FindElement(By.XPath(xpath));
+                return element.Enabled && element.Displayed;
+            });
+        }
+
+        private void RegisterAndLogIn()
         {
             // Navigate to base page
             driver.Navigate().GoToUrl(baseUrl);
@@ -62,32 +87,14 @@ namespace CarRentalTests
             driver.FindElement(By.XPath("//*[@id=\"identifierId\"]")).SendKeys(testingAccount);
             driver.FindElement(By.XPath("//*[@id=\"identifierNext\"]/div/button/span")).Click();
 
-            var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(testTimeout));
-            wait.Until((driver) =>
-            {
-                try
-                {
-                    driver.FindElement(By.XPath("//*[@id=\"password\"]/div[1]/div/div[1]/input")).Click();
-                }
-                catch (ElementNotInteractableException)
-                {
-                    return false;
-                }
-                return true;
-            });
-
+            WaitForXPath("//*[@id=\"password\"]/div[1]/div/div[1]/input");
             driver.FindElement(By.XPath("//*[@id=\"password\"]/div[1]/div/div[1]/input")).SendKeys(testingPassword);
             driver.FindElement(By.XPath("//*[@id=\"passwordNext\"]/div/button/span")).Click();
 
             driver.SwitchTo().Window(currentHandle);
 
             // Wait until signed in
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(testTimeout));
-            wait.Until((driver) =>
-            {
-                driver.FindElement(By.XPath("//*[@id=\"root\"]/div/h1"));
-                return true;
-            });
+            WaitForXPath("//*[@id=\"root\"]/div/h1");
 
             // Check if in register page
             string text = driver.FindElement(By.XPath("//*[@id=\"root\"]/div/h1")).Text;
@@ -99,19 +106,53 @@ namespace CarRentalTests
             driver.FindElement(By.Id("location")).SendKeys("Warsaw");
             driver.FindElement(By.XPath("//*[@id=\"root\"]/div/form/div/div/div/button")).Click();
 
-            // Go to viewcars
-            driver.Navigate().GoToUrl(baseUrl + "/viewcars");
+            // Wait until list visible
+            WaitForXPath("//*[@id=\"root\"]/div[2]/table");
+        }
 
-            // Check if list visible
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(testTimeout));
-            wait.Until((driver) =>
-            {
-                driver.FindElement(By.XPath("//*[@id=\"root\"]/div[2]/table"));
-                return true;
-            });
+        [Test]
+        public void SeleniumTestRegister()
+        {
+            RegisterAndLogIn();
 
             // Check if user added
-            Assert.True(dbUtils.UserExists(new CarRental.POCO.User { Email = testingAccount }));
+            Assert.True(dbUtils.UserExists(new CarRental.POCO.User {Email = testingAccount}));
+        }
+
+        [Test]
+        public void RentCarTest()
+        {
+            RegisterAndLogIn();
+
+            // Click Check Price
+            driver.FindElement((By.XPath($"//td[contains(.,\"{testCar.Model}\")]/../td/table/tbody/tr/td/button[2]")))
+                .Click();
+
+            // Wait for popup
+            WaitForXPath("//*[@id=\"from\"]");
+
+            // Check price
+            DateTime fromDate = DateTime.Today.AddDays(1);
+            DateTime toDate = DateTime.Today.AddDays(3);
+
+            new Actions(driver).MoveToElement(driver.FindElement(By.Id("from"))).Click()
+                .SendKeys(fromDate.ToShortDateString())
+                .Perform();
+            new Actions(driver).MoveToElement(driver.FindElement(By.Id("to"))).Click()
+                .SendKeys(toDate.ToShortDateString())
+                .Perform();
+            new Actions(driver).MoveToElement(driver.FindElement(By.XPath("//input[@id=\"from\"]/../button"))).Click()
+                .Perform();
+
+            WaitForXPath("//input[@id=\"from\"]/../button");
+            // Rent car
+            new Actions(driver).MoveToElement(driver.FindElement(By.XPath("//input[@id=\"from\"]/../button"))).Click()
+                            .Perform();
+
+            WaitForXPath("//*[contains(.,\"Successfully Rented Car\")]");
+            Assert.True((from rental in dbUtils.GetRentals()
+                where rental.CarId == testCar.Id
+                select rental).Any());
         }
 
         [TearDown]
@@ -119,7 +160,8 @@ namespace CarRentalTests
         {
             driver.Quit();
             CarRental.POCO.User user = dbUtils.FindUserByEmail(testingAccount);
-            if(user != null) dbUtils.RemoveUser(user);
+            if (user != null) dbUtils.RemoveUser(user);
+            dbUtils.RemoveCar(testCar);
         }
     }
 }
