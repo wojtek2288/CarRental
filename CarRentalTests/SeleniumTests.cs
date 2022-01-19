@@ -75,7 +75,7 @@ namespace CarRentalTests
         {
             // Navigate to base page
             driver.Navigate().GoToUrl(baseUrl);
-            IWebElement signInButton = driver.FindElement(By.XPath("//*[@id=\"root\"]/header/nav/div/div/ul/button"));
+            IWebElement signInButton = driver.FindElement(By.XPath("//button[contains(.,\"Sign In\")]"));
 
             // Click sign in button and switch to popup
             string currentHandle = driver.CurrentWindowHandle;
