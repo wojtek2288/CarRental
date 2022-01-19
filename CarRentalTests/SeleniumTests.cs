@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using CarRental.POCO;
 using OpenQA.Selenium.Interactions;
 
 namespace CarRentalTests
@@ -20,6 +21,7 @@ namespace CarRentalTests
         int testTimeout = 10;
 
         string testingAccount = "carrentaldotnettester@gmail.com";
+        string testingAuthID = "110551637047613637127";
         string testingPassword = "DobreHaslo123";
 
         private CarRental.POCO.Car testCar;
@@ -71,10 +73,11 @@ namespace CarRentalTests
             });
         }
 
-        private void RegisterAndLogIn()
+        private void LogIn()
         {
             // Navigate to base page
             driver.Navigate().GoToUrl(baseUrl);
+            string loginUrl = driver.Url;
             IWebElement signInButton = driver.FindElement(By.XPath("//button[contains(.,\"Sign In\")]"));
 
             // Click sign in button and switch to popup
@@ -94,7 +97,15 @@ namespace CarRentalTests
             driver.SwitchTo().Window(currentHandle);
 
             // Wait until signed in
-            WaitForXPath("//*[@id=\"root\"]/div/h1");
+            while (driver.Url == loginUrl)
+            {
+                Thread.Sleep(50);
+            }
+        }
+
+        private void RegisterAndLogIn()
+        {
+            LogIn();
 
             // Check if in register page
             string text = driver.FindElement(By.XPath("//*[@id=\"root\"]/div/h1")).Text;
@@ -147,12 +158,80 @@ namespace CarRentalTests
             WaitForXPath("//input[@id=\"from\"]/../button");
             // Rent car
             new Actions(driver).MoveToElement(driver.FindElement(By.XPath("//input[@id=\"from\"]/../button"))).Click()
-                            .Perform();
+                .Perform();
 
             WaitForXPath("//*[contains(.,\"Successfully Rented Car\")]");
             Assert.True((from rental in dbUtils.GetRentals()
                 where rental.CarId == testCar.Id
                 select rental).Any());
+        }
+
+        [Test]
+        public void AddCarTest()
+        {
+            User testingUser = new User()
+            {
+                Id = Guid.NewGuid(),
+                Email = testingAccount,
+                Location = "Atlantis",
+                DateOfBirth = new DateTime(2000, 1, 1),
+                DriversLicenseDate = new DateTime(2018, 1, 1),
+                AuthID = testingAuthID,
+                Role = User.UserRole.ADMINISTRATOR
+            };
+            dbUtils.AddUser(testingUser);
+
+            string testBrand = "Test Brand";
+            string testModel = "Test Model";
+            string testYear = "2000";
+            string testHorsepower = "100";
+            string testDescription = "Test Description";
+
+            try
+            {
+                LogIn();
+
+                driver.Navigate().GoToUrl(baseUrl + "/addcar");
+
+                WaitForXPath("//*[@id=\"car-brand\"]");
+
+                driver.FindElement(By.Id("car-brand")).SendKeys(testBrand);
+                driver.FindElement(By.Id("car-model")).SendKeys(testModel);
+                new SelectElement(driver.FindElement(By.Id("year-of-production"))).SelectByText(testYear);
+                driver.FindElement(By.Id("horse-power")).SendKeys(testHorsepower);
+                driver.FindElement(By.Id("description")).SendKeys(testDescription);
+                driver.FindElement(By.XPath("//button[@type=\"submit\"]")).Click();
+                WaitForXPath("//div[contains(.,\"Successfully Added Car\")]");
+            }
+            catch (Exception)
+            {
+                dbUtils.RemoveUser(testingUser);
+                Assert.Fail();
+            }
+
+            Car c = null;
+            foreach (Car car in dbUtils.GetNewCars())
+            {
+                if (car.Brand == testBrand &&
+                    car.Model == testModel &&
+                    car.YearOfProduction.ToString() == testYear &&
+                    car.Horsepower.ToString() == testHorsepower &&
+                    car.Description == testDescription)
+                {
+                    c = car;
+                    break;
+                }
+            }
+
+            if (c != null)
+            {
+                dbUtils.RemoveCar(c);
+                Assert.Pass();
+            }
+            else
+            {
+                Assert.Fail();
+            }
         }
 
         [TearDown]
