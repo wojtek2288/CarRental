@@ -11,6 +11,7 @@ namespace CarRental.POCO
         public int YearOfProduction { get; set; }
         public string Description { get; set; }
         public DateTime TimeAdded { get; set; }
+        public string Company { get; set; }
 
         public static explicit operator Car(Models.Car car)
         {

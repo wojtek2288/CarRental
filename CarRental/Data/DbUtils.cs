@@ -128,10 +128,13 @@ namespace CarRental.Data
         {
             foreach (Models.Car car in context.Cars)
             {
-                yield return (POCO.Car)car;
+                POCO.Car _car = (POCO.Car)car;
+                _car.Company = "Team A";
+                yield return _car;
             }
             foreach (POCO.Car car in APIUtils.GetCars())
             {
+                car.Company = "Team B";
                 yield return car;
             }
         }
@@ -144,9 +147,15 @@ namespace CarRental.Data
             {
                 foreach (POCO.Car car in APIUtils.GetCars())
                 {
-                    if (car.Id == id) return car;
+                    if (car.Id == id)
+                    {
+                        car.Company = "Team B";
+                        return car;
+                    }
                 }
             }
+            POCO.Car _found = (POCO.Car)found;
+            _found.Company = "Team A";
             return (POCO.Car)found;
         }
 
