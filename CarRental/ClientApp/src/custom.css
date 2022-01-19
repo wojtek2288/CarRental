@@ -98,6 +98,17 @@ code {
     .home-text {
         width: 70vw;
     }
+    .margin-left{
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 554px)
+{
+    .margin-left {
+        margin-left: 0;
+        margin-top: 1rem;
+    }
 }
 
 @media (max-width: 500px) {
