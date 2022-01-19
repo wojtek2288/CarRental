@@ -49,7 +49,7 @@ const RentedCars = (props) => {
         return new Date(Date.parse(dateString));
     }
 
-    const today = new Date();
+    console.log(props.url);
 
     return (<Fragment>
         <NavMenu logged={true} />
@@ -114,6 +114,16 @@ const RentedCars = (props) => {
                                                 <b>From:</b> <p>{parseDate(hist.from).toDateString()}</p>
                                                 <b>Return Date:</b> <p>{getDate(hist).toDateString()}</p>
                                             </div>
+
+                                            <ReturnData
+                                                refresh={setRefresh}
+                                                hist={hist}
+                                                hidden={
+                                                    props.title !== 'Rented Cars History' ||
+                                                    !clicked.state || hist.id != clicked.id
+                                                }
+                                            >
+                                            </ReturnData>
 
                                             <Button hidden={props.url === '/rentals/hist'} color='primary' className='margin-left'
                                                 

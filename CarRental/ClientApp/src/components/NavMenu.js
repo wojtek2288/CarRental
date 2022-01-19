@@ -98,8 +98,6 @@ const NavMenu = (props) => {
             <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" light>
                 <Container>
                     <NavbarBrand>CarRental</NavbarBrand>
-                    <NavbarToggler onClick={e => { setToggleNavbar(!toggleNavbar) }} className="mr-2" />
-                    <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!toggleNavbar} navbar>
                         <ul className="navbar-nav flex-grow">
                             {props.button === 'hide' ? null : (
                                 <Fragment>
@@ -150,7 +148,6 @@ const NavMenu = (props) => {
                                 </Fragment>
                             )}
                         </ul>
-                    </Collapse>
                 </Container>
             </Navbar>
         </header>
