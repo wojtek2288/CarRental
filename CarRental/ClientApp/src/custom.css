@@ -68,11 +68,8 @@ code {
 }
 
 .center {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
+    display: block;
+    margin: 0 auto;
 }
 
 .closeBtn {
@@ -98,20 +95,31 @@ code {
     .home-text {
         width: 70vw;
     }
-    .margin-left{
-        margin-left: 0;
-    }
-}
 
-@media (max-width: 554px)
-{
     .margin-left {
         margin-left: 0;
         margin-top: 1rem;
     }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 575px)
+{
+    .margin-left {
+        margin-left: 0;
+        margin-top: 0;
+    }
+
+    .hist-brand{
+        display: none;
+    }
+}
+
+@media (max-width: 491px) {
+    .margin-left {
+        margin-left: 0;
+        margin-top: 1rem;
+    }
+
     .home-text {
         width: 85vw;
     }

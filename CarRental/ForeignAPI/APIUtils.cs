@@ -20,7 +20,7 @@ namespace CarRental.ForeignAPI
             apis = new()
             {
                 new RentCarAPIUtils(),
-                new OtherCarRentalAPIUtils()
+                //new OtherCarRentalAPIUtils()
             };
         }
 

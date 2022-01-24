@@ -33,7 +33,6 @@ const ReturnForm = (props) => {
     const [readyDocument, setReadyDocument] = useState(false);
 
     const updateRental = async () => {
-        // if (selectedImage !== null && selectedDocument !== null) {
         if (readyImage && readyDocument) {
             const updated = props.choosenHist;
 

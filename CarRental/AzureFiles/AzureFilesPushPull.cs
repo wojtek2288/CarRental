@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,10 +11,13 @@ namespace CarRental.AzureFiles
     public static class AzureFilesPushPull
     {
         private static string containerName = "carrentalservicecontainer";
-        private static string connectionString = "DefaultEndpointsProtocol=https;AccountName=carrentalservicestorage;AccountKey=hSRbSQtX9aqi4PBLT48zJNCV51Yl0FFujRwtqKPVDKczyoKkn61UTS0XfKVWuSbBzmIndqbznrrK9E0JYj/4Iw==;EndpointSuffix=core.windows.net";
 
         public static async Task<string> UploadFile(string fileName, Stream fileStream)
         {
+            var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
+            var config = builder.Build();
+
+            string connectionString = config.GetConnectionString("AzureFiles");
             string baseName = Path.GetFileNameWithoutExtension(fileName);
             string extension = Path.GetExtension(fileName);
 
@@ -32,6 +36,11 @@ namespace CarRental.AzureFiles
 
         public static async Task<MemoryStream> DownloadFile(string fileName)
         {
+            var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
+            var config = builder.Build();
+
+            string connectionString = config.GetConnectionString("AzureFiles");
+
             BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
 
             BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
@@ -46,6 +55,11 @@ namespace CarRental.AzureFiles
 
         public static async Task<bool> DeleteFile(string fileName)
         {
+            var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
+            var config = builder.Build();
+
+            string connectionString = config.GetConnectionString("AzureFiles");
+
             BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
 
             BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);

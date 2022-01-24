@@ -58,6 +58,13 @@ const RentModal = (props) => {
         }
         catch (err) {
             console.log(err);
+            if (err.response.status === 500) {
+                setCheckingPrice(true);
+                setLoading(false);
+                setDisplayAlert(true);
+                setAlertType('danger');
+                setAlertText('This rental company is currently not avaliable');
+            }
         }
     }
 

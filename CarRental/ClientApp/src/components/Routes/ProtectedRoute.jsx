@@ -2,7 +2,8 @@
 import { Route, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import { Fragment } from 'react';
-import { Spinner } from 'reactstrap';
+import ClipLoader from "react-spinners/ClipLoader";
+import { centerSpinner } from '../../Utils/spinnerCss';
 
 const ProtectedRoute = ({ component: Component, role, ...rest }) => {
     const [user, setUser] = useState({
@@ -52,7 +53,7 @@ const ProtectedRoute = ({ component: Component, role, ...rest }) => {
     return (
         <Fragment>
             {user.loading ?
-                (<Spinner className='center'/>) :
+                (<ClipLoader css={centerSpinner} />) :
                 (<Route {...rest} render={() => user.state === role ? (< Component {...rest} />)
                     : (user.state === 'NotRegistered' ? (< Redirect to='/signup' />) : (<Redirect to='/'/>))} />)
             }

@@ -1,9 +1,9 @@
 ﻿using CarRental.Data;
 using CarRental.POCO;
-using RestSharp;
-using RestSharp.Authenticators;
-using System;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 using System.Timers;
 
@@ -20,30 +20,35 @@ namespace CarRental.Email
             this.dbUtils = dbUtils;
         }
 
-        public IRestResponse SendEmail(string to, string from, string subject, string text)
+        public void SendEmail(string to, string subject, string text)
         {
-            RestClient client = new RestClient();
-            client.BaseUrl = new Uri("https://api.mailgun.net/v3");
+            var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
+            var config = builder.Build();
 
-            client.Authenticator = new HttpBasicAuthenticator("api", "95f8f2be6bdb3f9a836d8723a444017b-7005f37e-93ad33d3");
-            RestRequest request = new RestRequest();
-            request.AddParameter("domain", "sandbox01dc3bfaf8e04910b886e12fbdde1f13.mailgun.org", ParameterType.UrlSegment);
-            request.Resource = "{domain}/messages";
+            var smtpClient = new SmtpClient(config["Smtp:Host"])
+            {
+                Port = int.Parse(config["Smtp:Port"]),
+                Credentials = new NetworkCredential(config["Smtp:Username"], config["Smtp:Password"]),
+                EnableSsl = true,
+            };
 
-            request.AddParameter("from", from);
-            request.AddParameter("to", to);
-            request.AddParameter("subject", subject);
-            request.AddParameter("text", text);
-            request.Method = Method.POST;
-            var response = client.Execute(request);
-            return response;
+            var mailMessage = new MailMessage
+            {
+                From = new MailAddress(config["Smtp:Username"]),
+                Subject = subject,
+                Body = text,
+                IsBodyHtml = false,
+            };
+
+            mailMessage.To.Add(to);
+            smtpClient.Send(mailMessage);
         }
 
-        public void SendToAll(string from, string subject, string text)
+        public void SendToAll(string subject, string text)
         {
             foreach (User user in dbUtils.GetUsers())
             {
-                SendEmail(user.Email, from, subject, text);
+                SendEmail(user.Email, subject, text);
             }
         }
 
@@ -51,7 +56,7 @@ namespace CarRental.Email
         {
             User user = dbUtils.FindUser(rental.UserId);
 
-            SendEmail(user.Email, "carrental@carrentalservice.com", "Car rented",
+            SendEmail(user.Email, "Car rented",
                 $"You just rented a car for {rental.Price} {rental.Currency} in the period from {rental.From} to {rental.To}.\n" +
                 $"Have a nice day!"
                 );
@@ -69,7 +74,7 @@ namespace CarRental.Email
                 sb.Append($"{car.Description}\n\n");
             }
 
-            SendToAll("newsletter@carrentalservice.com", $"We've got {cars.Count} new cars!", sb.ToString());
+            SendToAll($"We've got {cars.Count} new cars!", sb.ToString());
         }
 
         public static void StartNewsletter(DbUtils dbUtils, double interval)

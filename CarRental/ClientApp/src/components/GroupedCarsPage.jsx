@@ -1,8 +1,10 @@
 ﻿import React, { Fragment, useState, useEffect } from 'react';
 import { CardTitle, Container, FormGroup, Input, Spinner } from 'reactstrap';
+import ClipLoader from "react-spinners/ClipLoader";
 import CarTable from './CarTableAll';
 import NavMenu from './NavMenu';
 import axios from 'axios';
+import { override } from '../Utils/spinnerCss';
 
 export default function GroupedCars() {
     const [data, setData] = useState([])
@@ -155,7 +157,7 @@ export default function GroupedCars() {
                 </div>
             </Container>
             {loading == true ?
-                (<Spinner className="center" />) :
+                <ClipLoader color="#000000" css={override} /> :
                 (<Container className='margin-top'>
                     <CarTable data={customview()} role={localStorage.role}/>
                 </Container>)}

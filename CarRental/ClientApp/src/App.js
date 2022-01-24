@@ -1,11 +1,10 @@
-import React, { Component, Fragment } from 'react';
-import { Route, Switch, Router } from 'react-router-dom';
+import React, { Component } from 'react';
+import { Route, Switch} from 'react-router-dom';
 import Home from './components/Home';
 import axios from 'axios';
 
 import './custom.css'
 
-import UploadImage from './components/UploadImage';
 import SignUp from './components/SignUp';
 import AddCar from './components/AddCar';
 import GroupedCars from './components/GroupedCarsPage';
@@ -25,8 +24,7 @@ export default class App extends Component {
         return (
             <Switch>
                 <Route exact path='/' component={Home} />
-                <Route path='/signup' component={SignUp} />
-                <Route path='/upload' component={UploadImage} />
+                <ProtectedRoute path='/signup' component={SignUp} role='NotRegistered'/>
                 <ProtectedRoute path='/addcar' component={AddCar} role='Admin' />
                 <ProtectedRoute path='/admin' component={GroupedCars} role='Admin' />
                 <ProtectedRoute path='/rentalsadmin' component={AdminCurr} role='Admin' />
