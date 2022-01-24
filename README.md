@@ -25,5 +25,9 @@ Technologies used in project:
 - Selenium
 - NUnit
 
+## Admin Account
+
+- email: carrentalmini1@gmail.com
+- password: carrental123
 
 
