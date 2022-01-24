@@ -12,6 +12,7 @@ https://carrentalservicemini.azurewebsites.net/
 - Add cars and return rentals as Admin
 - Rent cars as User
 - Get car rental offers from different APIs
+- Email information about rentals, newsletter
 
 ## Tech
 
