@@ -126,7 +126,6 @@ namespace CarRental.Services
 
         public void ReturnCar(Guid Id, string image, string document, string note)
         {
-            //Guid Id = Guid.Parse(rent_id);
             var rental = dbUtils.FindRental(Id);
             
             if (rental == null) throw new BadRequestException("Wrong rental id");

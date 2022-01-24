@@ -169,7 +169,7 @@ namespace CarRental.Data
             }
             POCO.Car _found = (POCO.Car)found;
             _found.Company = "Team A";
-            return (POCO.Car)found;
+            return _found;
         }
 
         public POCO.Car FindCarInDatabase(Guid id)

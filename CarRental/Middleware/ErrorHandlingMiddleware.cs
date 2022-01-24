@@ -36,10 +36,10 @@ namespace CarRental.Middleware
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(badRequestException.Message);
             }
-            catch(Exception)
+            catch(Exception e)
             {
                 context.Response.StatusCode = 500;
-                await context.Response.WriteAsync("Something went wrong");
+                await context.Response.WriteAsync(e.Message);
             }
         }
     }

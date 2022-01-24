@@ -53,7 +53,7 @@ namespace CarRental.Services
                 throw new UnauthorizedException("Token expired");
 
             else if (response.error != null)
-                throw new InternalServerErrorException("Internal server error");
+                throw new InternalServerErrorException("Google server error");
 
             user = dbUtils.FindUserByAuthID(AuthID.ToString());
             if (user == null) return "NotRegistered";

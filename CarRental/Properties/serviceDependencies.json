@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "storage1": {
+      "type": "storage",
+      "connectionId": "DefaultEndpointsProtocol=https;AccountName=carrentalservicestorage;AccountKey=hSRbSQtX9aqi4PBLT48zJNCV51Yl0FFujRwtqKPVDKczyoKkn61UTS0XfKVWuSbBzmIndqbznrrK9E0JYj/4Iw==;EndpointSuffix=core.windows.net"
+    }
+  }
+}

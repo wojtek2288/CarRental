@@ -9,6 +9,7 @@ export default function GroupedCars() {
     const [loading, setLoading] = useState(true)
     const [brand, setBrand] = useState("")
     const [model, setModel] = useState("")
+    const [company, setCompany] = useState("");
     const [sortColumn, setSortColumn] = useState("")
 
     useEffect(() => {
@@ -38,6 +39,7 @@ export default function GroupedCars() {
         return rows.filter(
             row => row[0].brand.indexOf(brand) >= 0
                 && row[0].model.indexOf(model) >= 0
+                && row[0].company.indexOf(company) >= 0
         );
     }
 
@@ -46,6 +48,10 @@ export default function GroupedCars() {
     }
     function byModel(row1, row2) {
         return row1[0].model > row2[0].model;
+    }
+
+    function byCompany(row1, row2) {
+        return row1[0].company > row2[0].company;
     }
 
     function sortRows(rows) {
@@ -58,7 +64,7 @@ export default function GroupedCars() {
             cmp = byBrand
         }
         if (sortColumn == 'Company') {
-            cmp = (a, b) => false;
+            cmp = byCompany;
         }
 
         let tmp = [].concat(rows);
@@ -102,7 +108,7 @@ export default function GroupedCars() {
         }, {});
     };
 
-    const sortable = ['Company', 'Brand', 'Model'];
+    const sortable = ['', 'Company', 'Brand', 'Model'];
 
     return (
         <Fragment>
@@ -116,6 +122,8 @@ export default function GroupedCars() {
                             name="company"
                             placeholder="Company"
                             type="text"
+                            value={company}
+                            onChange={(e => setCompany(e.target.value))}
                         />
                         <Input className='search-input'
                             id="car-brand"

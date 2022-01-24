@@ -23,7 +23,7 @@ const RentedCars = (props) => {
                 'ApiKey': axios.defaults.headers.common['ApiKey']
             }
         })
-        .then((response) => response.json())
+            .then((response) => { console.log(response); return response.json(); })
         .then((json) => setData(json))
     }
 
